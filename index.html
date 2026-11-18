@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Aldy Alfaisal Pasaribu | 3D WebGPU &amp; Rapier Portfolio</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23161224'/%3E%3Cpath d='M32 10L50 48H41L36.8 38.5H27.2L23 48H14L32 10ZM30.2 31.5H33.8L32 27.2L30.2 31.5Z' fill='%23ff6b2b'/%3E%3C/svg%3E" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;700&amp;family=Space+Grotesk:wght@500;700&amp;display=swap" rel="stylesheet" />
+</head>
+<body>
+  <!-- Startup Loading State -->
+  <div class="loader-overlay js-loader" role="status" aria-live="polite">
+    <div class="loader-ring" aria-hidden="true"></div>
+    <div class="loader-title">Aldy Alfaisal Pasaribu</div>
+    <div class="loader-subtitle">Initializing Three.js WebGPU, TSL Shaders &amp; Rapier3D WASM...</div>
+  </div>
+
+  <!-- Top HUD Header -->
+  <header class="hud-header">
+    <div class="brand-card">
+      <h1 class="brand-name">Aldy Alfaisal Pasaribu</h1>
+      <p class="brand-role">Interactive 3D WebGPU &amp; Physics Portfolio</p>
+    </div>
+
+    <div class="telemetry-bar" aria-label="Engine Telemetry">
+      <div class="telemetry-item">
+        <span class="telemetry-label">Renderer</span>
+        <span class="telemetry-value js-telemetry-backend">WebGPU + TSL</span>
+      </div>
+      <div class="telemetry-item">
+        <span class="telemetry-label">Speed</span>
+        <span class="telemetry-value js-telemetry-speed">0 km/h</span>
+      </div>
+      <div class="telemetry-item">
+        <span class="telemetry-label">Driven</span>
+        <span class="telemetry-value js-telemetry-distance">0 m</span>
+      </div>
+      <div class="telemetry-item">
+        <span class="telemetry-label">TimeScale</span>
+        <span class="telemetry-value js-telemetry-timescale">2.00x</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- Active Proximity Zone & Interactive Point Trigger Banner -->
+  <div class="zone-status-container">
+    <div class="zone-badge js-zone-badge" aria-live="polite">ZONE: READY</div>
+    <button type="button" class="interaction-prompt js-interaction-prompt">
+      <span class="key-cap">ENTER / E</span>
+      <span class="js-interaction-prompt-text">OPEN ZONE</span>
+    </button>
+  </div>
+
+  <!-- Main 3D WebGPU Canvas Container -->
+  <main class="game">
+    <canvas class="js-canvas" aria-label="3D Interactive Driving World"></canvas>
+  </main>
+
+  <!-- Touch / Mobile Driving Controls -->
+  <nav class="touch-controls" aria-label="Touch Driving Controls">
+    <div class="touch-cluster">
+      <button type="button" class="touch-btn js-touch-left" aria-label="Steer Left">L</button>
+      <button type="button" class="touch-btn js-touch-right" aria-label="Steer Right">R</button>
+    </div>
+    <div class="touch-cluster">
+      <button type="button" class="touch-btn js-touch-jump" aria-label="Hydraulic Jump">JMP</button>
+      <button type="button" class="touch-btn js-touch-boost" aria-label="Turbo Boost">BST</button>
+      <button type="button" class="touch-btn js-touch-down" aria-label="Reverse">REV</button>
+      <button type="button" class="touch-btn js-touch-up" aria-label="Accelerate">GAS</button>
+    </div>
+  </nav>
+
+  <!-- Bottom HUD Controls & Quick Actions -->
+  <footer class="hud-footer">
+    <div class="controls-guide" aria-label="Keyboard Controls">
+      <span class="control-pair"><kbd class="kbd">WASD / Arrows</kbd> Drive</span>
+      <span class="control-pair"><kbd class="kbd">Shift</kbd> Boost (40m/s)</span>
+      <span class="control-pair"><kbd class="kbd">Space</kbd> Jump / <kbd class="kbd">1-4</kbd> Hydraulics</span>
+      <span class="control-pair"><kbd class="kbd">B</kbd> Brake</span>
+      <span class="control-pair"><kbd class="kbd">T</kbd> Bullet Time</span>
+      <span class="control-pair"><kbd class="kbd">R</kbd> Respawn</span>
+      <span class="control-pair"><kbd class="kbd">E / Enter</kbd> Interact</span>
+    </div>
+
+    <div class="action-toolbar">
+      <button type="button" class="hud-btn js-btn-daycycle">Atmosphere: DAY</button>
+      <button type="button" class="hud-btn js-btn-paint">Paint: Crimson Red</button>
+      <button type="button" class="hud-btn js-btn-bullettime">Bullet Time (0.5x)</button>
+      <button type="button" class="hud-btn js-btn-touchring">3D Touch Ring: OFF</button>
+      <button type="button" class="hud-btn js-btn-reset">Reset Arena</button>
+    </div>
+  </footer>
+
+  <!-- Interactive Zone Modals -->
+  <div class="modals-backdrop js-modals" role="dialog" aria-modal="true" aria-label="Zone Details Modal">
+    <!-- Modal 1: Projects Showcase -->
+    <article class="modal-card js-modal" data-name="projects">
+      <div class="modal-header">
+        <div>
+          <span class="modal-tag">Zone 01 • North-West Pavilion</span>
+          <h2 class="modal-title">Projects Showcase: Aldy Alfaisal Pasaribu</h2>
+        </div>
+        <button type="button" class="modal-close js-close">ESC / Close</button>
+      </div>
+      <div class="modal-body">
+        <p>
+          Eksplorasi karya rekayasa perangkat lunak, grafika 3D WebGPU, dan sistem interaktif waktu nyata oleh <strong>Aldy Alfaisal Pasaribu</strong>.
+        </p>
+        <div class="spec-grid">
+          <div class="spec-box">
+            <h3>3D WebGPU &amp; TSL Interactive World</h3>
+            <p>Implementasi penuh pipeline rendering node-based Three.js r187 dengan custom shadow catcher, procedural ground light bounce, dan offscreen tire tracks.</p>
+            <span class="spec-code">three/webgpu • three/tsl • BloomNode</span>
+          </div>
+          <div class="spec-box">
+            <h3>Rapier3D Raycast Vehicle Simulation</h3>
+            <p>Simulasi sasis komposit 3-collider dengan pergeseran pusat massa (-0.5m Y), suspensi hidrolik 3-tingkat, dan self-righting torque impulse.</p>
+            <span class="spec-code">@dimforge/rapier3d • WASM SIMD</span>
+          </div>
+          <div class="spec-box">
+            <h3>Procedural Grass &amp; Track Deformation</h3>
+            <p>32.400 helai rumput toroidal dalam satu draw call yang bereaksi langsung terhadap tekstur ring-buffer jejak roda dan turbulensi angin Perlin.</p>
+            <span class="spec-code">DataTexture(128x1) • RenderTarget(512)</span>
+          </div>
+        </div>
+      </div>
+    </article>
+
+    <!-- Modal 2: About Aldy Alfaisal Pasaribu -->
+    <article class="modal-card js-modal" data-name="about">
+      <div class="modal-header">
+        <div>
+          <span class="modal-tag">Zone 02 • North-East Pavilion</span>
+          <h2 class="modal-title">About Aldy Alfaisal Pasaribu</h2>
+        </div>
+        <button type="button" class="modal-close js-close">ESC / Close</button>
+      </div>
+      <div class="modal-body">
+        <p>
+          <strong>Aldy Alfaisal Pasaribu</strong> adalah pengembang kreatif dan engineer aplikasi web interaktif yang berfokus pada arsitektur grafika 3D modern, simulasi fisika waktu nyata, dan optimasi performa tinggi di browser.
+        </p>
+        <div class="spec-grid">
+          <div class="spec-box">
+            <h3>Creative Engineering</h3>
+            <p>Menggabungkan estetika visual stylized dengan arsitektur shader TSL modular dan kontrol kamera semi-isometrik yang presisi.</p>
+            <span class="spec-code">WebGPU • WGSL / GLSL • GSAP</span>
+          </div>
+          <div class="spec-box">
+            <h3>Multi-Device Interaction</h3>
+            <p>Mendukung perpindahan mulus antara Keyboard, Gamepad lintas-platform, Mouse Raycasting, dan cincin kemudi 3D Diegetic Touch Ring.</p>
+            <span class="spec-code">Inputs.js • Nipple.js • RayCursor.js</span>
+          </div>
+        </div>
+      </div>
+    </article>
+
+    <!-- Modal 3: Engine & Physics Telemetry Specs -->
+    <article class="modal-card js-modal" data-name="specs">
+      <div class="modal-header">
+        <div>
+          <span class="modal-tag">Zone 03 • North Telemetry Station</span>
+          <h2 class="modal-title">Reverse-Engineered Engine &amp; Physics Parameters</h2>
+        </div>
+        <button type="button" class="modal-close js-close">ESC / Close</button>
+      </div>
+      <div class="modal-body">
+        <p>
+          Seluruh parameter runtime pada prototipe ini menerapkan hasil ekstraksi spesifikasi di <code>docs/bruno-simon-re/01..04</code>:
+        </p>
+        <div class="spec-grid">
+          <div class="spec-box">
+            <h3>Prioritized Game Loop</h3>
+            <p>Urutan eksekusi deterministik per frame dengan skala waktu default 2.0x dan transisi Bullet Time 0.5x.</p>
+            <span class="spec-code">Order 0..14 -> Order 998 Render</span>
+          </div>
+          <div class="spec-box">
+            <h3>Chassis &amp; Bumper Bitmasks</h3>
+            <p>Main Body mass 2.5 (CoM Y = -0.5), wheel radius 0.4m, frictionSlip 0.9, dan collider bumper khusus yang mengabaikan lantai.</p>
+            <span class="spec-code">engineForce: 300 • topSpeedBoost: 40</span>
+          </div>
+          <div class="spec-box">
+            <h3>Camera &amp; Post-Processing</h3>
+            <p>FOV 25° pada phi 0.31π, theta 0.25π, dynamic speed zoom-out (-0.4), spring-damper roll, HDR Bloom, dan Tilt-Shift CheapDOF.</p>
+            <span class="spec-code">CubeCamera(32) PreRenderer Warmup</span>
+          </div>
+        </div>
+      </div>
+    </article>
+  </div>
+
+  <script type="module" src="/src/main.js"></script>
+</body>
+</html>

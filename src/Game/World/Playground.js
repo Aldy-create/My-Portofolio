@@ -2,7 +2,6 @@ import * as THREE from 'three/webgpu'
 import { Game } from '../Game.js'
 import { color, luminance } from 'three/tsl'
 import { MeshDefaultMaterial } from '../Materials/MeshDefaultMaterial.js'
-import { InteractivePoints } from '../InteractivePoints.js'
 
 export class Playground
 {
@@ -11,20 +10,13 @@ export class Playground
         this.game = Game.getInstance()
 
         this.dynamicObjects = []
-        this.animatedStructures = []
 
         this.setMaterials()
         this.setHeroSignage()
         this.setJumpRamps()
         this.setBrickWallsAndPyramids()
         this.setExplosiveBulletTimeCrates()
-        this.setInteractiveZones()
         this.setSceneryPosts()
-
-        this.game.ticker.events.on('tick', () =>
-        {
-            this.update()
-        }, 10)
     }
 
     setMaterials()
@@ -86,7 +78,7 @@ export class Playground
 
         ctx.fillStyle = '#5eead4'
         ctx.font = '600 28px "Space Grotesk", system-ui, sans-serif'
-        ctx.fillText('3D WEBGPU • TSL SHADERS • RAPIER3D PORTFOLIO', 512, 178)
+        ctx.fillText('AI & ROBOTICS UNDERGRADUATE • TANGERANG, INDONESIA', 512, 178)
 
         const signTexture = new THREE.Texture(canvas)
         signTexture.colorSpace = THREE.SRGBColorSpace
@@ -327,127 +319,6 @@ export class Playground
         }
     }
 
-    setInteractiveZones()
-    {
-        const createZonePavilion = ({
-            position,
-            emissiveMaterial,
-            title,
-            modalName,
-            align,
-            cinematicOffset
-        }) =>
-        {
-            const group = new THREE.Group()
-            group.position.copy(position)
-
-            // Octagonal stone platform
-            const pad = new THREE.Mesh(
-                new THREE.CylinderGeometry(3.6, 3.9, 0.24, 8),
-                this.stoneMaterial
-            )
-            pad.position.y = 0.12
-            pad.receiveShadow = true
-            group.add(pad)
-
-            // Glowing perimeter ring
-            const ring = new THREE.Mesh(
-                new THREE.TorusGeometry(3.45, 0.07, 8, 32),
-                emissiveMaterial
-            )
-            ring.rotation.x = Math.PI * 0.5
-            ring.position.y = 0.25
-            group.add(ring)
-
-            // Central obelisk pillar + floating crystal
-            const obelisk = new THREE.Mesh(
-                new THREE.BoxGeometry(1.2, 2.2, 1.2),
-                this.pillarMaterial
-            )
-            obelisk.position.y = 1.2
-            obelisk.castShadow = true
-            obelisk.receiveShadow = true
-            group.add(obelisk)
-
-            const crystal = new THREE.Mesh(
-                new THREE.OctahedronGeometry(0.68, 0),
-                emissiveMaterial
-            )
-            crystal.position.y = 3.1
-            group.add(crystal)
-            this.animatedStructures.push(crystal)
-
-            this.game.objects.add(
-                { model: group },
-                {
-                    type: 'fixed',
-                    position: position,
-                    colliders: [
-                        { shape: 'cuboid', parameters: [ 0.65, 1.2, 0.65 ], position: { x: 0, y: 1.2, z: 0 } }
-                    ]
-                }
-            )
-
-            // 1. Proximity Cylinder Zone (Zones.js)
-            const zone = this.game.zones.create('cylinder', position, 6.2, { title, modalName })
-            zone.events.on('enter', () =>
-            {
-                crystal.scale.setScalar(1.35)
-                this.game.setZoneBadge?.(title)
-            })
-            zone.events.on('leave', () =>
-            {
-                crystal.scale.setScalar(1.0)
-                this.game.setZoneBadge?.(null)
-            })
-
-            // 2. Floating 3D Diamond InteractivePoint (InteractivePoints.js)
-            const pointPos = position.clone().add(new THREE.Vector3(0, 1.65, 2.6))
-            this.game.interactivePoints.create(
-                pointPos,
-                title,
-                align,
-                () =>
-                {
-                    this.game.modals.open(modalName, {
-                        position: position.clone().add(cinematicOffset),
-                        target: position.clone().add(new THREE.Vector3(0, 1.6, 0))
-                    })
-                }
-            )
-        }
-
-        // Zone 1: Featured Projects (North-West)
-        createZonePavilion({
-            position: new THREE.Vector3(-15, 0, -11),
-            emissiveMaterial: this.emissiveCyan,
-            title: 'PROJECTS SHOWCASE',
-            modalName: 'projects',
-            align: InteractivePoints.ALIGN_LEFT,
-            cinematicOffset: new THREE.Vector3(7, 8, 9)
-        })
-
-        // Zone 2: About Aldy Alfaisal Pasaribu (North-East)
-        createZonePavilion({
-            position: new THREE.Vector3(15, 0, -11),
-            emissiveMaterial: this.emissiveAmber,
-            title: 'ABOUT ALDY ALFAISAL',
-            modalName: 'about',
-            align: InteractivePoints.ALIGN_RIGHT,
-            cinematicOffset: new THREE.Vector3(-7, 8, 9)
-        })
-
-        // Zone 3: Engine & Physics Telemetry (Due North)
-        createZonePavilion({
-            position: new THREE.Vector3(0, 0, -19),
-            emissiveMaterial: this.emissiveViolet,
-            title: 'ENGINE & PHYSICS SPECS',
-            modalName: 'specs',
-            align: InteractivePoints.ALIGN_LEFT,
-            cinematicOffset: new THREE.Vector3(6, 7.5, 8.5)
-        })
-    }
-
     setSceneryPosts()
     {
         // Stylized lantern posts around the road intersections
@@ -481,17 +352,6 @@ export class Playground
                     ]
                 }
             )
-        }
-    }
-
-    update()
-    {
-        const t = this.game.ticker.elapsedScaled
-        for(let i = 0; i < this.animatedStructures.length; i++)
-        {
-            const crystal = this.animatedStructures[i]
-            crystal.rotation.y = t * 0.8 + i
-            crystal.position.y = 3.1 + Math.sin(t * 1.5 + i) * 0.18
         }
     }
 }

@@ -296,6 +296,28 @@ export class Inputs
         this.events.trigger('modeChange', [ this.mode ])
     }
 
+    releaseAll()
+    {
+        for(const action of this.actions.values())
+        {
+            if(action.active || action.activeKeys.size > 0)
+            {
+                action.activeKeys.clear()
+                action.active = false
+                action.value = 0
+                action.trigger = 'end'
+                this.events.trigger('actionEnd', [ action ])
+                this.events.trigger(action.name, [ action ])
+            }
+        }
+
+        if(this.nipple && this.nipple.active)
+        {
+            this.nipple.active = false
+            this.nipple.progress = 0
+        }
+    }
+
     update()
     {
         this.pointer.update()

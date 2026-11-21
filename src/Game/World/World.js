@@ -3,6 +3,7 @@ import { Floor } from './Floor.js'
 import { Grass } from './Grass.js'
 import { VisualVehicle } from './VisualVehicle.js'
 import { Playground } from './Playground.js'
+import { PortfolioLandmarks } from './PortfolioLandmarks.js'
 
 export class World
 {
@@ -17,5 +18,6 @@ export class World
         this.floor = new Floor()
         this.grass = new Grass()
         this.playground = new Playground()
+        this.landmarks = new PortfolioLandmarks()
     }
 }

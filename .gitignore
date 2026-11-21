@@ -13,3 +13,7 @@ Thumbs.db
 .env.*
 .vscode/*
 !.vscode/extensions.json
+
+# Private / Local Docs & CV
+docs/
+*.pdf

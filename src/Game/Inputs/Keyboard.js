@@ -20,7 +20,8 @@ export default class Keyboard
             if(document.activeElement && document.activeElement.matches('input, textarea, [contenteditable]') && _event.code !== 'Escape')
                 return
 
-            if(_event.code === 'Space' || _event.code.startsWith('Arrow'))
+            const isWandering = document.documentElement.classList.contains('input-filter-wandering')
+            if(isWandering && (_event.code === 'Space' || _event.code.startsWith('Arrow')))
                 _event.preventDefault()
 
             this.pressed.push(_event.code, _event.key)

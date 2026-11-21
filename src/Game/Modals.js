@@ -1,5 +1,6 @@
 import { Events } from './Events.js'
 import { Game } from './Game.js'
+import { Player } from './Player.js'
 
 export class Modals
 {
@@ -14,11 +15,11 @@ export class Modals
         this.current = null
         this.events = new Events()
         this.items = new Map()
+        this._backdropBound = false
 
         if(this.element)
         {
-            this.setItems()
-            this.setClose()
+            this.refreshItems()
         }
 
         this.game.inputs.addActions([
@@ -34,8 +35,12 @@ export class Modals
         })
     }
 
-    setItems()
+    refreshItems()
     {
+        if(!this.element)
+            return
+
+        this.items.clear()
         const elements = this.element.querySelectorAll('.js-modal')
         for(const el of elements)
         {
@@ -46,6 +51,8 @@ export class Modals
                 mainFocus: el.querySelector('.js-close')
             })
         }
+
+        this.setClose()
     }
 
     setClose()
@@ -53,17 +60,25 @@ export class Modals
         const closeButtons = this.element.querySelectorAll('.js-close')
         for(const btn of closeButtons)
         {
+            if(btn.dataset.modalCloseBound)
+                continue
+
+            btn.dataset.modalCloseBound = 'true'
             btn.addEventListener('click', () =>
             {
                 this.close()
             })
         }
 
-        this.element.addEventListener('click', (event) =>
+        if(!this._backdropBound)
         {
-            if(event.target === this.element)
-                this.close()
-        })
+            this._backdropBound = true
+            this.element.addEventListener('click', (event) =>
+            {
+                if(event.target === this.element)
+                    this.close()
+            })
+        }
     }
 
     open(name, cinematicCamera = null)
@@ -76,6 +91,9 @@ export class Modals
         {
             other.element.classList.remove('is-displayed')
         }
+
+        const isDrawer = item.element.classList.contains('glass-drawer')
+        this.element.classList.toggle('is-drawer-mode', isDrawer)
 
         this.element.classList.add('is-displayed')
         item.element.classList.add('is-displayed')
@@ -90,8 +108,14 @@ export class Modals
         this.state = Modals.OPEN
         this.current = item
 
+        this.game.inputs.releaseAll()
         this.game.inputs.filters.clear()
         this.game.inputs.filters.add('modal')
+
+        if(this.game.player)
+        {
+            this.game.player.state = Player.STATE_LOCKED
+        }
 
         if(cinematicCamera)
         {
@@ -122,6 +146,12 @@ export class Modals
 
         this.game.inputs.filters.clear()
         this.game.inputs.filters.add('wandering')
+
+        if(this.game.player)
+        {
+            this.game.player.state = Player.STATE_DEFAULT
+        }
+
         this.game.view.cinematic.end()
 
         this.events.trigger('close')

@@ -24,6 +24,7 @@ import { Water } from './Water.js'
 import { Reveal } from './Reveal.js'
 import { Quality } from './Quality.js'
 import { PreRenderer } from './PreRenderer.js'
+import { PortfolioUI } from './PortfolioUI.js'
 
 export class Game
 {
@@ -93,6 +94,7 @@ export class Game
         }
 
         this.setupHUD()
+        this.portfolioUI = new PortfolioUI()
 
         document.documentElement.classList.add('is-started')
         const loaderEl = document.querySelector('.js-loader')
@@ -107,18 +109,28 @@ export class Game
 
     setupHUD()
     {
-        const speedEl = document.querySelector('.js-telemetry-speed')
-        const distEl = document.querySelector('.js-telemetry-distance')
-        const backendEl = document.querySelector('.js-telemetry-backend')
-        const timeScaleEl = document.querySelector('.js-telemetry-timescale')
         const promptEl = document.querySelector('.js-interaction-prompt')
         const promptTextEl = document.querySelector('.js-interaction-prompt-text')
         const zoneBadgeEl = document.querySelector('.js-zone-badge')
+        const controlHintEl = document.querySelector('.js-control-hint')
+        let controlHintDismissed = false
 
-        if(backendEl)
+        const dismissControlHint = () =>
         {
-            const isWebGPU = !!this.rendering.renderer.backend?.isWebGPUBackend
-            backendEl.textContent = isWebGPU ? 'WebGPU + TSL' : 'WebGL2 Fallback + TSL'
+            if(controlHintDismissed || !controlHintEl)
+                return
+            controlHintDismissed = true
+            controlHintEl.classList.add('is-hidden')
+        }
+
+        // Auto-hide subtle control hint as soon as the user starts driving
+        for(const moveAction of ['forward', 'backward', 'left', 'right'])
+        {
+            this.inputs.events.on(moveAction, (action) =>
+            {
+                if(action.active)
+                    dismissControlHint()
+            })
         }
 
         this.updatePromptUI = (item) =>
@@ -144,7 +156,7 @@ export class Game
 
             if(title)
             {
-                zoneBadgeEl.textContent = `ZONE: ${title}`
+                zoneBadgeEl.textContent = title
                 zoneBadgeEl.classList.add('is-visible')
             }
             else
@@ -162,7 +174,7 @@ export class Game
             })
         }
 
-        // Action Bar Buttons
+        // Minimal Optional World Utility Buttons (Reset / Atmosphere)
         const btnReset = document.querySelector('.js-btn-reset')
         if(btnReset)
         {
@@ -178,41 +190,8 @@ export class Game
             btnCycleTime.addEventListener('click', () =>
             {
                 const preset = this.lighting.cyclePreset()
-                btnCycleTime.textContent = `Atmosphere: ${preset.toUpperCase()}`
-            })
-        }
-
-        const btnPaint = document.querySelector('.js-btn-paint')
-        if(btnPaint)
-        {
-            btnPaint.addEventListener('click', () =>
-            {
-                const label = this.world.visualVehicle.cyclePaint()
-                btnPaint.textContent = `Paint: ${label}`
-            })
-        }
-
-        const btnBulletTime = document.querySelector('.js-btn-bullettime')
-        if(btnBulletTime)
-        {
-            btnBulletTime.addEventListener('click', () =>
-            {
-                this.time.bulletTime.activate(2.0)
-            })
-        }
-
-        const btnTouchRing = document.querySelector('.js-btn-touchring')
-        if(btnTouchRing)
-        {
-            btnTouchRing.addEventListener('click', () =>
-            {
-                this.inputs.touchRingEnabled = !this.inputs.touchRingEnabled
-                if(this.inputs.touchRingEnabled)
-                    this.inputs.updateMode(Inputs.MODE_TOUCH)
-                else
-                    this.inputs.updateMode(Inputs.MODE_MOUSEKEYBOARD)
-
-                btnTouchRing.textContent = `3D Touch Ring: ${this.inputs.touchRingEnabled ? 'ON' : 'OFF'}`
+                btnCycleTime.setAttribute('title', `Atmosphere: ${preset.toUpperCase()}`)
+                this.portfolioUI?.showToast(`Atmosphere: ${preset.toUpperCase()}`)
             })
         }
 
@@ -226,6 +205,7 @@ export class Game
             const startHold = (e) =>
             {
                 e.preventDefault()
+                dismissControlHint()
                 this.inputs.start(keyName)
                 btn.classList.add('is-pressed')
             }
@@ -249,21 +229,12 @@ export class Game
         bindHoldButton('.js-touch-boost', 'Keyboard.ShiftLeft')
         bindHoldButton('.js-touch-jump', 'Keyboard.Space')
 
-        // Live HUD telemetry update on tick priority 14
+        // Auto-hide control hint if player moves via gamepad or touch ring
         this.ticker.events.on('tick', () =>
         {
-            if(speedEl)
+            if(!controlHintDismissed && this.player.distanceDriven > 1.2)
             {
-                const kmh = Math.round(this.physicalVehicle.xzSpeed * 3.6)
-                speedEl.textContent = `${kmh} km/h`
-            }
-            if(distEl)
-            {
-                distEl.textContent = `${Math.floor(this.player.distanceDriven)} m`
-            }
-            if(timeScaleEl)
-            {
-                timeScaleEl.textContent = `${this.time.scale.toFixed(2)}x`
+                dismissControlHint()
             }
         }, 14)
     }

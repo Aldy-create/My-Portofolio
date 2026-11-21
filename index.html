@@ -1,194 +1,114 @@
 <!DOCTYPE html>
-<html lang="id">
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Aldy Alfaisal Pasaribu | 3D WebGPU &amp; Rapier Portfolio</title>
+  <meta name="description" content="Interactive 3D Portfolio of Aldy Alfaisal Pasaribu — AI & Robotics Undergraduate. Bridging embedded IoT, computer vision, and human-centered software." />
+  <title>Aldy Alfaisal Pasaribu | AI &amp; Robotics 3D Portfolio</title>
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23161224'/%3E%3Cpath d='M32 10L50 48H41L36.8 38.5H27.2L23 48H14L32 10ZM30.2 31.5H33.8L32 27.2L30.2 31.5Z' fill='%23ff6b2b'/%3E%3C/svg%3E" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;700&amp;family=Space+Grotesk:wght@500;700&amp;display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;700&amp;family=Space+Grotesk:wght@400;500;600;700&amp;display=swap" rel="stylesheet" />
 </head>
 <body>
   <!-- Startup Loading State -->
   <div class="loader-overlay js-loader" role="status" aria-live="polite">
     <div class="loader-ring" aria-hidden="true"></div>
     <div class="loader-title">Aldy Alfaisal Pasaribu</div>
-    <div class="loader-subtitle">Initializing Three.js WebGPU, TSL Shaders &amp; Rapier3D WASM...</div>
+    <div class="loader-subtitle">Loading Interactive 3D World...</div>
   </div>
 
-  <!-- Top HUD Header -->
-  <header class="hud-header">
-    <div class="brand-card">
-      <h1 class="brand-name">Aldy Alfaisal Pasaribu</h1>
-      <p class="brand-role">Interactive 3D WebGPU &amp; Physics Portfolio</p>
-    </div>
+  <!-- Minimal Top HUD: Identity Chip + Single Floating Capsule Nav -->
+  <header class="hud-top">
+    <button type="button" class="identity-chip js-identity-chip" title="View Profile & Education">
+      <span class="identity-dot" aria-hidden="true"></span>
+      <span class="identity-name">Aldy Alfaisal Pasaribu</span>
+      <span class="identity-role">AI &amp; Robotics</span>
+    </button>
 
-    <div class="telemetry-bar" aria-label="Engine Telemetry">
-      <div class="telemetry-item">
-        <span class="telemetry-label">Renderer</span>
-        <span class="telemetry-value js-telemetry-backend">WebGPU + TSL</span>
-      </div>
-      <div class="telemetry-item">
-        <span class="telemetry-label">Speed</span>
-        <span class="telemetry-value js-telemetry-speed">0 km/h</span>
-      </div>
-      <div class="telemetry-item">
-        <span class="telemetry-label">Driven</span>
-        <span class="telemetry-value js-telemetry-distance">0 m</span>
-      </div>
-      <div class="telemetry-item">
-        <span class="telemetry-label">TimeScale</span>
-        <span class="telemetry-value js-telemetry-timescale">2.00x</span>
-      </div>
-    </div>
+    <nav class="nav-capsule" aria-label="Portfolio Sections">
+      <button type="button" class="nav-capsule-btn js-nav-pill" data-drawer="projects">Projects</button>
+      <button type="button" class="nav-capsule-btn js-nav-pill" data-drawer="experience">Experience</button>
+      <button type="button" class="nav-capsule-btn js-nav-pill" data-drawer="skills">Skills</button>
+      <button type="button" class="nav-capsule-btn js-nav-pill" data-drawer="education">Education</button>
+    </nav>
   </header>
 
-  <!-- Active Proximity Zone & Interactive Point Trigger Banner -->
+  <!-- Proximity Zone Indicator & Interaction Prompt (Hidden unless near a 3D landmark) -->
   <div class="zone-status-container">
-    <div class="zone-badge js-zone-badge" aria-live="polite">ZONE: READY</div>
+    <div class="zone-badge js-zone-badge" aria-live="polite"></div>
     <button type="button" class="interaction-prompt js-interaction-prompt">
-      <span class="key-cap">ENTER / E</span>
-      <span class="js-interaction-prompt-text">OPEN ZONE</span>
+      <span class="key-cap">E</span>
+      <span class="js-interaction-prompt-text">Inspect</span>
     </button>
   </div>
 
-  <!-- Main 3D WebGPU Canvas Container -->
+  <!-- Full-Viewport 3D WebGPU Canvas -->
   <main class="game">
-    <canvas class="js-canvas" aria-label="3D Interactive Driving World"></canvas>
+    <canvas class="js-canvas" aria-label="3D Interactive Portfolio World of Aldy Alfaisal Pasaribu"></canvas>
   </main>
 
-  <!-- Touch / Mobile Driving Controls -->
+  <!-- Auto-Hide Bottom Control Hint (Fades out automatically once driving starts) -->
+  <div class="control-hint js-control-hint" aria-live="polite">
+    <span><kbd>WASD</kbd> / <kbd>Arrows</kbd> to drive</span>
+    <span class="hint-sep" aria-hidden="true">&bull;</span>
+    <span>Click 3D pads &amp; landmarks to explore</span>
+  </div>
+
+  <!-- Minimal Bottom-Right Quick Contact Dock (Icon-Only, Subtle Opacity) -->
+  <aside class="quick-contact-dock" aria-label="Quick Contact & Utilities">
+    <button type="button" class="dock-icon-btn js-quick-contact" data-contact="github" aria-label="GitHub" title="GitHub">
+      <svg viewBox="0 0 24 24" width="17" height="17" fill="currentColor" aria-hidden="true">
+        <path d="M12 2C6.48 2 2 6.58 2 12.26c0 4.53 2.87 8.37 6.84 9.73.5.09.68-.22.68-.49 0-.24-.01-.88-.01-1.73-2.78.62-3.37-1.37-3.37-1.37-.46-1.18-1.11-1.5-1.11-1.5-.91-.64.07-.63.07-.63 1 .07 1.53 1.05 1.53 1.05.9 1.57 2.35 1.12 2.92.85.09-.66.35-1.12.64-1.38-2.22-.26-4.56-1.14-4.56-5.06 0-1.12.39-2.03 1.03-2.75-.1-.26-.45-1.3.1-2.71 0 0 .84-.27 2.75 1.05A9.36 9.36 0 0 1 12 6.84c.85 0 1.71.12 2.51.35 1.91-1.32 2.75-1.05 2.75-1.05.55 1.41.2 2.45.1 2.71.64.72 1.03 1.63 1.03 2.75 0 3.93-2.34 4.8-4.57 5.05.36.32.68.94.68 1.9 0 1.37-.01 2.48-.01 2.82 0 .27.18.59.69.49A10.27 10.27 0 0 0 22 12.26C22 6.58 17.52 2 12 2z"/>
+      </svg>
+    </button>
+    <button type="button" class="dock-icon-btn js-quick-contact" data-contact="linkedin" aria-label="LinkedIn" title="LinkedIn">
+      <svg viewBox="0 0 24 24" width="17" height="17" fill="currentColor" aria-hidden="true">
+        <path d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14m-.5 15.5v-5.3a3.26 3.26 0 0 0-3.26-3.26c-.85 0-1.84.52-2.28 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 0 1 1.4 1.4v4.93h2.75M6.88 8.56a1.68 1.68 0 0 0 1.68-1.68c0-.93-.75-1.69-1.68-1.69a1.69 1.69 0 0 0-1.69 1.69c0 .93.76 1.68 1.69 1.68m1.39 9.94v-8.37H5.5v8.37h2.77z"/>
+      </svg>
+    </button>
+    <button type="button" class="dock-icon-btn js-quick-contact" data-contact="email" aria-label="Email" title="Copy & Email aldypasaribu59@gmail.com">
+      <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <rect x="3" y="5" width="18" height="14" rx="2"/>
+        <path d="m3 7 9 6 9-6"/>
+      </svg>
+    </button>
+
+    <span class="dock-divider" aria-hidden="true"></span>
+
+    <button type="button" class="dock-icon-btn js-btn-daycycle" aria-label="Switch Atmosphere" title="Cycle Day / Dusk / Night">
+      <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <circle cx="12" cy="12" r="4"/>
+        <path d="M12 2v2m0 16v2M4.93 4.93l1.41 1.41m11.32 11.32 1.41 1.41M2 12h2m16 0h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/>
+      </svg>
+    </button>
+    <button type="button" class="dock-icon-btn js-btn-reset" aria-label="Respawn Vehicle" title="Reset Position (R)">
+      <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M3 12a9 9 0 1 0 3-6.7L3 8"/>
+        <path d="M3 3v5h5"/>
+      </svg>
+    </button>
+  </aside>
+
+  <!-- Touch / Mobile Driving Controls (Only visible on touch devices) -->
   <nav class="touch-controls" aria-label="Touch Driving Controls">
     <div class="touch-cluster">
       <button type="button" class="touch-btn js-touch-left" aria-label="Steer Left">L</button>
       <button type="button" class="touch-btn js-touch-right" aria-label="Steer Right">R</button>
     </div>
     <div class="touch-cluster">
-      <button type="button" class="touch-btn js-touch-jump" aria-label="Hydraulic Jump">JMP</button>
-      <button type="button" class="touch-btn js-touch-boost" aria-label="Turbo Boost">BST</button>
+      <button type="button" class="touch-btn js-touch-jump" aria-label="Jump">JMP</button>
+      <button type="button" class="touch-btn js-touch-boost" aria-label="Boost">BST</button>
       <button type="button" class="touch-btn js-touch-down" aria-label="Reverse">REV</button>
-      <button type="button" class="touch-btn js-touch-up" aria-label="Accelerate">GAS</button>
+      <button type="button" class="touch-btn js-touch-up" aria-label="Drive">GAS</button>
     </div>
   </nav>
 
-  <!-- Bottom HUD Controls & Quick Actions -->
-  <footer class="hud-footer">
-    <div class="controls-guide" aria-label="Keyboard Controls">
-      <span class="control-pair"><kbd class="kbd">WASD / Arrows</kbd> Drive</span>
-      <span class="control-pair"><kbd class="kbd">Shift</kbd> Boost (40m/s)</span>
-      <span class="control-pair"><kbd class="kbd">Space</kbd> Jump / <kbd class="kbd">1-4</kbd> Hydraulics</span>
-      <span class="control-pair"><kbd class="kbd">B</kbd> Brake</span>
-      <span class="control-pair"><kbd class="kbd">T</kbd> Bullet Time</span>
-      <span class="control-pair"><kbd class="kbd">R</kbd> Respawn</span>
-      <span class="control-pair"><kbd class="kbd">E / Enter</kbd> Interact</span>
-    </div>
+  <!-- Toast Notification -->
+  <div class="toast-banner js-toast" role="status" aria-live="polite"></div>
 
-    <div class="action-toolbar">
-      <button type="button" class="hud-btn js-btn-daycycle">Atmosphere: DAY</button>
-      <button type="button" class="hud-btn js-btn-paint">Paint: Crimson Red</button>
-      <button type="button" class="hud-btn js-btn-bullettime">Bullet Time (0.5x)</button>
-      <button type="button" class="hud-btn js-btn-touchring">3D Touch Ring: OFF</button>
-      <button type="button" class="hud-btn js-btn-reset">Reset Arena</button>
-    </div>
-  </footer>
-
-  <!-- Interactive Zone Modals -->
-  <div class="modals-backdrop js-modals" role="dialog" aria-modal="true" aria-label="Zone Details Modal">
-    <!-- Modal 1: Projects Showcase -->
-    <article class="modal-card js-modal" data-name="projects">
-      <div class="modal-header">
-        <div>
-          <span class="modal-tag">Zone 01 • North-West Pavilion</span>
-          <h2 class="modal-title">Projects Showcase: Aldy Alfaisal Pasaribu</h2>
-        </div>
-        <button type="button" class="modal-close js-close">ESC / Close</button>
-      </div>
-      <div class="modal-body">
-        <p>
-          Eksplorasi karya rekayasa perangkat lunak, grafika 3D WebGPU, dan sistem interaktif waktu nyata oleh <strong>Aldy Alfaisal Pasaribu</strong>.
-        </p>
-        <div class="spec-grid">
-          <div class="spec-box">
-            <h3>3D WebGPU &amp; TSL Interactive World</h3>
-            <p>Implementasi penuh pipeline rendering node-based Three.js r187 dengan custom shadow catcher, procedural ground light bounce, dan offscreen tire tracks.</p>
-            <span class="spec-code">three/webgpu • three/tsl • BloomNode</span>
-          </div>
-          <div class="spec-box">
-            <h3>Rapier3D Raycast Vehicle Simulation</h3>
-            <p>Simulasi sasis komposit 3-collider dengan pergeseran pusat massa (-0.5m Y), suspensi hidrolik 3-tingkat, dan self-righting torque impulse.</p>
-            <span class="spec-code">@dimforge/rapier3d • WASM SIMD</span>
-          </div>
-          <div class="spec-box">
-            <h3>Procedural Grass &amp; Track Deformation</h3>
-            <p>32.400 helai rumput toroidal dalam satu draw call yang bereaksi langsung terhadap tekstur ring-buffer jejak roda dan turbulensi angin Perlin.</p>
-            <span class="spec-code">DataTexture(128x1) • RenderTarget(512)</span>
-          </div>
-        </div>
-      </div>
-    </article>
-
-    <!-- Modal 2: About Aldy Alfaisal Pasaribu -->
-    <article class="modal-card js-modal" data-name="about">
-      <div class="modal-header">
-        <div>
-          <span class="modal-tag">Zone 02 • North-East Pavilion</span>
-          <h2 class="modal-title">About Aldy Alfaisal Pasaribu</h2>
-        </div>
-        <button type="button" class="modal-close js-close">ESC / Close</button>
-      </div>
-      <div class="modal-body">
-        <p>
-          <strong>Aldy Alfaisal Pasaribu</strong> adalah pengembang kreatif dan engineer aplikasi web interaktif yang berfokus pada arsitektur grafika 3D modern, simulasi fisika waktu nyata, dan optimasi performa tinggi di browser.
-        </p>
-        <div class="spec-grid">
-          <div class="spec-box">
-            <h3>Creative Engineering</h3>
-            <p>Menggabungkan estetika visual stylized dengan arsitektur shader TSL modular dan kontrol kamera semi-isometrik yang presisi.</p>
-            <span class="spec-code">WebGPU • WGSL / GLSL • GSAP</span>
-          </div>
-          <div class="spec-box">
-            <h3>Multi-Device Interaction</h3>
-            <p>Mendukung perpindahan mulus antara Keyboard, Gamepad lintas-platform, Mouse Raycasting, dan cincin kemudi 3D Diegetic Touch Ring.</p>
-            <span class="spec-code">Inputs.js • Nipple.js • RayCursor.js</span>
-          </div>
-        </div>
-      </div>
-    </article>
-
-    <!-- Modal 3: Engine & Physics Telemetry Specs -->
-    <article class="modal-card js-modal" data-name="specs">
-      <div class="modal-header">
-        <div>
-          <span class="modal-tag">Zone 03 • North Telemetry Station</span>
-          <h2 class="modal-title">Reverse-Engineered Engine &amp; Physics Parameters</h2>
-        </div>
-        <button type="button" class="modal-close js-close">ESC / Close</button>
-      </div>
-      <div class="modal-body">
-        <p>
-          Seluruh parameter runtime pada prototipe ini menerapkan hasil ekstraksi spesifikasi di <code>docs/bruno-simon-re/01..04</code>:
-        </p>
-        <div class="spec-grid">
-          <div class="spec-box">
-            <h3>Prioritized Game Loop</h3>
-            <p>Urutan eksekusi deterministik per frame dengan skala waktu default 2.0x dan transisi Bullet Time 0.5x.</p>
-            <span class="spec-code">Order 0..14 -> Order 998 Render</span>
-          </div>
-          <div class="spec-box">
-            <h3>Chassis &amp; Bumper Bitmasks</h3>
-            <p>Main Body mass 2.5 (CoM Y = -0.5), wheel radius 0.4m, frictionSlip 0.9, dan collider bumper khusus yang mengabaikan lantai.</p>
-            <span class="spec-code">engineForce: 300 • topSpeedBoost: 40</span>
-          </div>
-          <div class="spec-box">
-            <h3>Camera &amp; Post-Processing</h3>
-            <p>FOV 25° pada phi 0.31π, theta 0.25π, dynamic speed zoom-out (-0.4), spring-damper roll, HDR Bloom, dan Tilt-Shift CheapDOF.</p>
-            <span class="spec-code">CubeCamera(32) PreRenderer Warmup</span>
-          </div>
-        </div>
-      </div>
-    </article>
-  </div>
+  <!-- On-Demand Slide-Over Drawers & Centered GPA Gimmick Modal -->
+  <div class="modals-backdrop js-modals" role="dialog" aria-modal="true" aria-label="Portfolio Information Panel"></div>
 
   <script type="module" src="/src/main.js"></script>
 </body>

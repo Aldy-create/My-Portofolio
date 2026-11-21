@@ -89,6 +89,9 @@ export class InteractivePoints
     {
         this.game.inputs.events.on('interact', (action) =>
         {
+            if(this.game.vehicleManager?.nearbyId || this.game.vehicleManager?.activeId === 'excavator')
+                return
+
             if(action.active && this.activeItem && this.activeItem.state === InteractivePoints.STATE_OPEN)
             {
                 this.activeItem.interact()

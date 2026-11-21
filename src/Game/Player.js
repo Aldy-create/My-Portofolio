@@ -238,6 +238,8 @@ export class Player
                 this.steering *= -1
             }
         }
+
+        this.game.vehicleManager?.applyControls(this)
     }
 
     updatePostPhysics()

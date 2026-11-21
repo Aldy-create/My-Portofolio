@@ -929,3 +929,48 @@ html.is-mode-touch .touch-controls {
     transition-duration: 0.01ms !important;
   }
 }
+
+/* Vehicle fleet + contextual machinery HUD */
+.vehicle-switcher {
+  position: fixed; left: 1rem; bottom: 1rem; z-index: 21;
+  display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .3rem;
+  width: 225px; padding: .55rem; border-radius: 14px;
+  background: rgba(17, 15, 26, .72); border: 1px solid var(--glass-border);
+  backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+}
+.vehicle-switcher-title { grid-column: 1 / -1; color: var(--text-muted); font: 700 .58rem var(--font-mono); letter-spacing: .14em; padding: .1rem .25rem .2rem; }
+.vehicle-switcher button {
+  min-width: 0; border: 1px solid transparent; border-radius: 7px; padding: .34rem .38rem;
+  color: var(--text-secondary); background: rgba(255,255,255,.045); font: 600 .64rem var(--font-display);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis; cursor: pointer;
+}
+.vehicle-switcher button:hover { color: var(--text-primary); background: rgba(255,255,255,.1); }
+.vehicle-switcher button.is-active { color: #19131b; background: var(--accent-amber); border-color: var(--accent-amber); }
+.vehicle-nearby-prompt {
+  position: fixed; left: 50%; bottom: 5.2rem; z-index: 23; transform: translateX(-50%);
+  display: inline-flex; align-items: center; gap: .55rem; padding: .48rem .85rem; border-radius: 999px;
+  color: var(--text-primary); background: rgba(17,15,26,.82); border: 1px solid var(--glass-border); backdrop-filter: blur(12px);
+  font: 600 .76rem var(--font-display); pointer-events: none;
+}
+.vehicle-nearby-prompt[hidden] { display: none; }
+.vehicle-nearby-prompt kbd { padding: .12rem .38rem; border-radius: 4px; color: #19131b; background: var(--accent-amber); font: 700 .68rem var(--font-mono); }
+.vehicle-controls-hint {
+  position: fixed; right: 1rem; top: 5.6rem; z-index: 19; max-width: 250px; padding: .45rem .68rem;
+  border-radius: 9px; background: rgba(17,15,26,.72); border: 1px solid var(--glass-border);
+  color: var(--text-secondary); font: 600 .62rem/1.5 var(--font-mono); opacity: 0; transform: translateY(-5px); pointer-events: none;
+  transition: opacity .2s ease, transform .2s ease;
+}
+.vehicle-controls-hint.is-visible { opacity: 1; transform: translateY(0); }
+.world-audio-toggle {
+  position: fixed; top: 1rem; right: 1rem; z-index: 30; padding: .42rem .68rem; border-radius: 999px;
+  color: var(--text-secondary); background: rgba(17,15,26,.7); border: 1px solid var(--glass-border); backdrop-filter: blur(10px);
+  font: 600 .62rem var(--font-mono); cursor: pointer;
+}
+.world-audio-toggle:hover { color: var(--text-primary); border-color: var(--glass-border-hover); }
+@media (max-width: 768px) {
+  .vehicle-switcher { left: .5rem; top: 7.4rem; bottom: auto; width: 192px; gap: .22rem; padding: .4rem; }
+  .vehicle-switcher button { padding: .3rem .25rem; font-size: .58rem; }
+  .vehicle-nearby-prompt { bottom: 10.5rem; }
+  .vehicle-controls-hint { top: 7.6rem; right: .5rem; max-width: 190px; font-size: .55rem; }
+  .world-audio-toggle { top: .55rem; right: .55rem; }
+}

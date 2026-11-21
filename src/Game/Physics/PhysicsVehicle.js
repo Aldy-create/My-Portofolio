@@ -85,6 +85,7 @@ export class PhysicsVehicle
                 if(force > 8 && this.game.view)
                 {
                     this.game.view.roll.kick(Math.min(2.5, force * 0.04))
+                    this.game.soundEngine?.impact(force)
                 }
             }
         })

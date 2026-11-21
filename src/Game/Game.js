@@ -25,6 +25,9 @@ import { Reveal } from './Reveal.js'
 import { Quality } from './Quality.js'
 import { PreRenderer } from './PreRenderer.js'
 import { PortfolioUI } from './PortfolioUI.js'
+import { VehicleManager } from './Vehicles/VehicleManager.js'
+import { ParticlePool } from './Effects/ParticlePool.js'
+import { SoundEngine } from './Audio/SoundEngine.js'
 
 export class Game
 {
@@ -86,6 +89,9 @@ export class Game
 
         this.world = new World()
         this.world.build()
+        this.particles = new ParticlePool(this)
+        this.soundEngine = new SoundEngine(this)
+        this.vehicleManager = new VehicleManager(this)
 
         // Phase 4: WebGPU Shader Pre-Warmup (CubeCamera 32x32) & Reveal Animation
         if(this.quality.level === 0 && this.rendering.renderer.backend?.isWebGPUBackend)
@@ -169,7 +175,9 @@ export class Game
         {
             promptEl.addEventListener('click', () =>
             {
-                if(this.interactivePoints.activeItem)
+                if(this.vehicleManager?.nearbyId)
+                    this.vehicleManager.switchTo(this.vehicleManager.nearbyId, false)
+                else if(this.interactivePoints.activeItem)
                     this.interactivePoints.activeItem.interact()
             })
         }

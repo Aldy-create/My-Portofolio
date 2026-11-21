@@ -36,7 +36,15 @@ An interactive 3D driving portfolio
 | `B` | Brake |
 | `T` | Bullet Time (Slow-Motion) |
 | `R` | Respawn Vehicle |
-| `E` / `Enter` / `Click` | Inspect 3D Landmark / Contact Pad |
+| `E` / `Enter` / `Click` | Inspect a landmark or enter a nearby vehicle |
+| Fleet HUD / click a parked vehicle | Switch between seven drivable vehicles |
+| Excavator: `W/S`, `A/D` | Drive / steer tracks |
+| Excavator: `Q/E` | Rotate upper cab (E is turret control while operating) |
+| Excavator: `I/K` | Raise/lower boom and arm |
+| Excavator: `J/L` | Curl bucket to scoop / tip to unload soil |
+| Dump Truck: `Space` | Raise/lower cargo bed |
+| Bulldozer: `I/K` | Raise/lower front blade |
+| `H` | Horn |
 | `Esc` | Close Active Drawer / Modal |
 
 ## Run Locally

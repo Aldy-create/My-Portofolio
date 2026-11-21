@@ -1,6 +1,6 @@
 import * as THREE from 'three/webgpu'
 import { Game } from '../Game.js'
-import { color, luminance } from 'three/tsl'
+import { color, luminance, uniform } from 'three/tsl'
 import { MeshDefaultMaterial } from '../Materials/MeshDefaultMaterial.js'
 
 export class Playground
@@ -10,6 +10,7 @@ export class Playground
         this.game = Game.getInstance()
 
         this.dynamicObjects = []
+        this.nightLights = []
 
         this.setMaterials()
         this.setHeroSignage()
@@ -17,6 +18,14 @@ export class Playground
         this.setBrickWallsAndPyramids()
         this.setExplosiveBulletTimeCrates()
         this.setSceneryPosts()
+
+        // Street lamps brighten as the world moves toward night.
+        this.game.ticker.events.on('tick', () => {
+            const name = this.game.lighting?.currentPresetName
+            const target = name === 'night' ? 4.2 : name === 'dusk' ? 2.2 : 0.7
+            const dt = Math.min(this.game.ticker.deltaScaled, 0.1)
+            this.lampGlow.value += (target - this.lampGlow.value) * dt
+        }, 14)
     }
 
     setMaterials()
@@ -40,6 +49,12 @@ export class Playground
         const violetColor = color('#c850ff')
         this.emissiveViolet = new THREE.MeshBasicNodeMaterial()
         this.emissiveViolet.colorNode = violetColor.div(luminance(violetColor)).mul(2.8)
+
+        // Dedicated street-lamp glow whose brightness follows the day/night preset.
+        this.lampGlow = uniform(1.0)
+        const lampColor = color('#ffb066')
+        this.lampMaterial = new THREE.MeshBasicNodeMaterial()
+        this.lampMaterial.colorNode = lampColor.div(luminance(lampColor)).mul(this.lampGlow)
     }
 
     setHeroSignage()
@@ -338,9 +353,10 @@ export class Playground
             pole.position.y = 1.6
             pole.castShadow = true
 
-            const bulb = new THREE.Mesh(bulbGeo, this.emissiveAmber)
+            const bulb = new THREE.Mesh(bulbGeo, this.lampMaterial)
             bulb.position.y = 3.3
             group.add(pole, bulb)
+            this.nightLights.push(bulb)
 
             this.game.objects.add(
                 { model: group },

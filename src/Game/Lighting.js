@@ -107,6 +107,8 @@ export class Lighting
 
         this.game.scene.add(this.light)
         this.game.scene.add(this.light.target)
+        this.hemisphere = new THREE.HemisphereLight('#ffe2bc', '#4c5149', 0.55)
+        this.game.scene.add(this.hemisphere)
     }
 
     setPreset(name)
@@ -165,5 +167,10 @@ export class Lighting
         this.colorUniform.value.lerp(preset.lightColor, dt)
         this.shadowColor.value.lerp(preset.shadowColor, dt)
         this.intensityUniform.value += (preset.lightIntensity - this.intensityUniform.value) * dt
+        if(this.hemisphere)
+        {
+            const target = this.currentPresetName === 'night' ? 0.18 : this.currentPresetName === 'dusk' ? 0.4 : 0.62
+            this.hemisphere.intensity += (target - this.hemisphere.intensity) * dt
+        }
     }
 }

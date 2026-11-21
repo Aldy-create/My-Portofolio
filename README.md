@@ -5,7 +5,7 @@
 
 **Live Test Preview:** https://my-portofolio-liard-tau.vercel.app/
 
-An interactive 3D driving portfolio world built with **Three.js (WebGPU & TSL)** and **Rapier3D (WASM)**, showcasing the profile, technical projects, academic experience, and skills of **Aldy Alfaisal Pasaribu** (AI & Robotics Undergraduate).
+An interactive 3D driving portfolio
 
 ---
 
@@ -52,9 +52,3 @@ Build for production:
 npm run build
 npm run preview
 ```
-
-## Public Contact
-
-- **Email:** aldypasaribu59@gmail.com
-- **GitHub:** https://github.com/Aldy-create
-- **LinkedIn:** https://www.linkedin.com/in/aldy-alfaisal-p-390bb1317/

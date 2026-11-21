@@ -1,4 +1,4 @@
-# Aldy Alfaisal Pasaribu — 3D Interactive Portfolio *(Test Prototype)*
+# Test Portfolio *(Test Prototype)*
 
 > [!NOTE]
 > **Status:** This is an **experimental test build / prototype only**, not the final or actual portfolio version. Layout, 3D assets, and content are currently being tested and iterated on.

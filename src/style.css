@@ -933,24 +933,29 @@ html.is-mode-touch .touch-controls {
 /* Vehicle fleet + contextual machinery HUD */
 .vehicle-switcher {
   position: fixed; left: 1rem; bottom: 1rem; z-index: 21;
-  display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .3rem;
   width: 225px; padding: .55rem; border-radius: 14px;
   background: rgba(17, 15, 26, .72); border: 1px solid var(--glass-border);
   backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
 }
+.vehicle-switcher-toggle {
+  display: none; width: 100%; border: 1px solid var(--glass-border); border-radius: 8px;
+  padding: .4rem .6rem; color: var(--text-primary); background: rgba(255,255,255,.06);
+  font: 700 .68rem var(--font-display); cursor: pointer; text-align: left;
+}
+.vehicle-switcher-list { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .3rem; }
 .vehicle-switcher-title { grid-column: 1 / -1; color: var(--text-muted); font: 700 .58rem var(--font-mono); letter-spacing: .14em; padding: .1rem .25rem .2rem; }
-.vehicle-switcher button {
+.vehicle-switcher-list button {
   min-width: 0; border: 1px solid transparent; border-radius: 7px; padding: .34rem .38rem;
   color: var(--text-secondary); background: rgba(255,255,255,.045); font: 600 .64rem var(--font-display);
-  white-space: nowrap; overflow: hidden; text-overflow: ellipsis; cursor: pointer;
+  white-space: normal; line-height: 1.15; cursor: pointer;
 }
-.vehicle-switcher button:hover { color: var(--text-primary); background: rgba(255,255,255,.1); }
-.vehicle-switcher button.is-active { color: #19131b; background: var(--accent-amber); border-color: var(--accent-amber); }
+.vehicle-switcher-list button:hover { color: var(--text-primary); background: rgba(255,255,255,.1); }
+.vehicle-switcher-list button.is-active { color: #19131b; background: var(--accent-amber); border-color: var(--accent-amber); }
 .vehicle-nearby-prompt {
   position: fixed; left: 50%; bottom: 5.2rem; z-index: 23; transform: translateX(-50%);
   display: inline-flex; align-items: center; gap: .55rem; padding: .48rem .85rem; border-radius: 999px;
   color: var(--text-primary); background: rgba(17,15,26,.82); border: 1px solid var(--glass-border); backdrop-filter: blur(12px);
-  font: 600 .76rem var(--font-display); pointer-events: none;
+  font: 600 .76rem var(--font-display); pointer-events: auto; cursor: pointer;
 }
 .vehicle-nearby-prompt[hidden] { display: none; }
 .vehicle-nearby-prompt kbd { padding: .12rem .38rem; border-radius: 4px; color: #19131b; background: var(--accent-amber); font: 700 .68rem var(--font-mono); }
@@ -967,10 +972,28 @@ html.is-mode-touch .touch-controls {
   font: 600 .62rem var(--font-mono); cursor: pointer;
 }
 .world-audio-toggle:hover { color: var(--text-primary); border-color: var(--glass-border-hover); }
+/* Contextual touch controls for construction vehicles (touch devices only) */
+.vehicle-touch-controls {
+  position: fixed; left: 50%; bottom: 8.6rem; transform: translateX(-50%); z-index: 20;
+  display: none; flex-wrap: wrap; justify-content: center; gap: .4rem; max-width: 92vw; pointer-events: none;
+}
+.vehicle-touch-controls.is-visible { display: flex; }
+.vehicle-touch-controls .touch-btn { pointer-events: auto; width: auto; min-width: 52px; height: 44px; padding: 0 .6rem; font-size: .68rem; }
+/* Touch-first devices: collapsible fleet, tap-only prompts, no keyboard hints */
+html.is-mode-touch .vehicle-switcher-toggle { display: block; }
+html.is-mode-touch .vehicle-switcher-list { display: none; margin-top: .4rem; }
+html.is-mode-touch .vehicle-switcher.is-open .vehicle-switcher-list { display: grid; }
+html.is-mode-touch .key-cap,
+html.is-mode-touch .vehicle-nearby-prompt kbd,
+html.is-mode-touch .zone-badge,
+html.is-mode-touch .vehicle-controls-hint { display: none !important; }
 @media (max-width: 768px) {
-  .vehicle-switcher { left: .5rem; top: 7.4rem; bottom: auto; width: 192px; gap: .22rem; padding: .4rem; }
-  .vehicle-switcher button { padding: .3rem .25rem; font-size: .58rem; }
-  .vehicle-nearby-prompt { bottom: 10.5rem; }
+  .vehicle-switcher { left: .5rem; top: 7.4rem; bottom: auto; width: 192px; padding: .4rem; }
+  .vehicle-switcher-list { gap: .22rem; }
+  .vehicle-switcher-list button { padding: .3rem .25rem; font-size: .58rem; }
+  .vehicle-nearby-prompt { bottom: 16rem; }
   .vehicle-controls-hint { top: 7.6rem; right: .5rem; max-width: 190px; font-size: .55rem; }
   .world-audio-toggle { top: .55rem; right: .55rem; }
+  .toast-banner { top: 8rem; bottom: auto; left: auto; right: .6rem; transform: translateY(-8px); }
+  .toast-banner.is-visible { transform: translateY(0); }
 }

@@ -72,7 +72,7 @@ export class PhysicsVehicle
             rotation: new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0, 1, 0), 0),
             colliders: [
                 // 1. Main Body with shifted Center of Mass (y: -0.5)
-                { shape: 'cuboid', mass: 2.5, parameters: [ 1.3, 0.4, 0.85 ], position: { x: 0, y: -0.1, z: 0 }, centerOfMass: { x: 0, y: -0.5, z: 0 } },
+                { shape: 'cuboid', mass: 2.5, parameters: [ 1.3, 0.4, 0.85 ], position: { x: 0, y: -0.1, z: 0 }, centerOfMass: { x: 0, y: -0.95, z: 0 } },
                 // 2. Top Cabin
                 { shape: 'cuboid', mass: 0, parameters: [ 0.5, 0.15, 0.65 ], position: { x: 0, y: 0.4, z: 0 } },
                 // 3. Bumper (only collides with dynamic objects, ignores floor)

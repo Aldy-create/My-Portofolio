@@ -42,17 +42,39 @@ export class VehicleManager {
     root.traverse(o=>{if(o.isMesh)o.castShadow=o.receiveShadow=true});root.userData.parts=parts;return root
   }
   makeFleet(){for(const p of VEHICLE_PROFILES){const active=this.makeModel(p);active.visible=p.id!=='buggy';this.game.scene.add(active);this.models.set(p.id,active);const parked=this.makeModel(p),s=this.stations.get(p.id);parked.position.set(s.x,.9,s.z);if(p.id==='dump-truck'||p.id==='hatchback')parked.rotation.y=Math.PI;parked.visible=p.id!=='buggy';this.game.scene.add(parked);this.parked.set(p.id,parked)}}
-  makeUI(){this.ui=document.createElement('aside');this.ui.className='vehicle-switcher';this.ui.setAttribute('aria-label','Vehicle fleet');const title=document.createElement('div');title.className='vehicle-switcher-title';title.textContent='FLEET / 07';this.ui.append(title);this.buttons=new Map()
-    for(const p of VEHICLE_PROFILES){const b=document.createElement('button');b.type='button';b.dataset.vehicle=p.id;b.textContent=p.label;b.title=`Switch to ${p.label}`;b.onclick=()=>this.switchTo(p.id,true);this.buttons.set(p.id,b);this.ui.append(b)}
-    this.prompt=document.createElement('div');this.prompt.className='vehicle-nearby-prompt';this.prompt.hidden=true;this.prompt.innerHTML='<kbd>E</kbd><span></span>';document.body.append(this.ui,this.prompt)
-    this.controlHint=document.createElement('div');this.controlHint.className='vehicle-controls-hint';document.body.append(this.controlHint);this.syncUI()}
+  makeUI(){this.isTouch=document.documentElement.classList.contains('is-mode-touch')
+    this.ui=document.createElement('aside');this.ui.className='vehicle-switcher';this.ui.setAttribute('aria-label','Vehicle fleet')
+    this.toggle=document.createElement('button');this.toggle.type='button';this.toggle.className='vehicle-switcher-toggle';this.toggle.textContent='Fleet ▾'
+    this.list=document.createElement('div');this.list.className='vehicle-switcher-list'
+    const title=document.createElement('div');title.className='vehicle-switcher-title';title.textContent='FLEET / 07';this.list.append(title)
+    this.buttons=new Map()
+    for(const p of VEHICLE_PROFILES){const b=document.createElement('button');b.type='button';b.dataset.vehicle=p.id;b.textContent=p.short||p.label;b.title=`Switch to ${p.label}`;b.onclick=()=>this.switchTo(p.id,true);this.buttons.set(p.id,b);this.list.append(b)}
+    this.ui.append(this.toggle,this.list)
+    this.toggle.onclick=()=>this.setFleetOpen(!this.fleetOpen)
+    this.prompt=document.createElement('div');this.prompt.className='vehicle-nearby-prompt';this.prompt.hidden=true;this.prompt.innerHTML='<kbd>E</kbd><span></span>'
+    this.prompt.addEventListener('click',()=>{if(this.nearbyId)this.switchTo(this.nearbyId,false)})
+    document.body.append(this.ui,this.prompt)
+    this.controlHint=document.createElement('div');this.controlHint.className='vehicle-controls-hint';document.body.append(this.controlHint)
+    this.makeTouchControls();this.setFleetOpen(!this.isTouch);this.syncUI()}
+  setFleetOpen(open){this.fleetOpen=open;this.ui.classList.toggle('is-open',open);this.toggle.setAttribute('aria-expanded',String(open));this.toggle.textContent=open?'Fleet ▴':'Fleet ▾'}
+  makeTouchControls(){if(!this.isTouch)return;this.touchPanel=document.createElement('div');this.touchPanel.className='vehicle-touch-controls';document.body.append(this.touchPanel)}
+  bindTouchHold(btn,code){const start=e=>{e.preventDefault();const k=this.game.inputs.keyboard.pressed;if(!k.includes(code))k.push(code);btn.classList.add('is-pressed')}
+    const end=e=>{e.preventDefault();const k=this.game.inputs.keyboard.pressed;const i=k.indexOf(code);if(i!==-1)k.splice(i,1);btn.classList.remove('is-pressed')}
+    btn.addEventListener('pointerdown',start);btn.addEventListener('pointerup',end);btn.addEventListener('pointerleave',end);btn.addEventListener('pointercancel',end)}
+  refreshTouchControls(){if(!this.touchPanel)return;this.touchPanel.innerHTML=''
+    let defs=[]
+    if(this.activeId==='excavator')defs=[['⟲','KeyQ'],['⟳','KeyE'],['Boom ▲','KeyI'],['Boom ▼','KeyK'],['Scoop','KeyJ'],['Dump','KeyL']]
+    else if(this.activeId==='bulldozer')defs=[['Blade ▲','KeyI'],['Blade ▼','KeyK']]
+    else if(this.activeId==='dump-truck')defs=[['Bed','Space']]
+    for(const [label,code] of defs){const b=document.createElement('button');b.type='button';b.className='touch-btn';b.textContent=label;this.bindTouchHold(b,code);this.touchPanel.append(b)}
+    this.touchPanel.classList.toggle('is-visible',defs.length>0)}
   bindInputs(){this.game.inputs.events.on('interact',a=>{if(a.active&&this.activeId!=='excavator'&&this.nearbyId)this.switchTo(this.nearbyId,false)});this.game.inputs.keyboard.events.on('down',code=>{if(code==='KeyH')this.game.soundEngine?.honk()})}
   applyProfile(){const p=getVehicleProfile(this.activeId),v=this.game.physicalVehicle;v.engineForceAmplitude=p.engineForce;v.topSpeed=p.topSpeed;v.steeringAmplitude=p.steering;v.boostMultiplier=['car','pickup','hatchback','rover'].includes(p.kind)?2:1}
   switchTo(id,quick){const p=getVehicleProfile(id);if(!p||id===this.activeId)return;const old=this.activeId;this.activeId=id;this.applyProfile();if(this.game.world?.visualVehicle?.parts?.chassis)this.game.world.visualVehicle.parts.chassis.visible=id==='buggy';for(const [key,m] of this.models)m.visible=key===id&&id!=='buggy';for(const [key,m] of this.parked)m.visible=key!==id;if(old!=='buggy')this.models.get(old).visible=false
     this.game.view.focusPoint.isTracking=true;if(id!=='buggy'){const m=this.models.get(id);m.scale.setScalar(.9);gsap.to(m.scale,{x:1,y:1,z:1,duration:.55,ease:'back.out(1.2)',overwrite:true})}this.syncUI();this.game.portfolioUI?.showToast(`Vehicle: ${p.label}`)}
-  syncUI(){for(const [id,b] of this.buttons||[])b.classList.toggle('is-active',id===this.activeId);const p=getVehicleProfile(this.activeId);if(this.controlHint){this.controlHint.textContent=p.controls;this.controlHint.classList.toggle('is-visible',['excavator','dump-truck','bulldozer'].includes(p.id))}}
+  syncUI(){for(const [id,b] of this.buttons||[])b.classList.toggle('is-active',id===this.activeId);const p=getVehicleProfile(this.activeId);if(this.controlHint){this.controlHint.textContent=p.controls;this.controlHint.classList.toggle('is-visible',['excavator','dump-truck','bulldozer'].includes(p.id))}this.refreshTouchControls()}
   pressed(c){return this.game.inputs.keyboard.pressed.includes(c)}
-  applyControls(player){if(this.activeId==='excavator'){player.accelerating=(this.pressed('KeyW')?1:0)-(this.pressed('KeyS')?1:0);player.steering=(this.pressed('KeyA')?1:0)-(this.pressed('KeyD')?1:0);player.boosting=0;player.braking=this.pressed('KeyB')?1:0}
+  applyControls(player){if(this.activeId==='excavator'){const kw=this.pressed('KeyW'),ks=this.pressed('KeyS'),ka=this.pressed('KeyA'),kd=this.pressed('KeyD');if(kw||ks)player.accelerating=(kw?1:0)-(ks?1:0);if(ka||kd)player.steering=(ka?1:0)-(kd?1:0);player.boosting=0;if(this.pressed('KeyB'))player.braking=1}
     if(this.activeId==='dump-truck'){player.boosting=0;const s=this.pressed('Space');if(s&&!this.lastSpace)this.bedRaised=!this.bedRaised;this.lastSpace=s}if(this.activeId==='bulldozer')player.boosting=0}
   getWorldPosition(id){return id===this.activeId?this.game.physicalVehicle.position.clone():this.stations.get(id).clone().add(new THREE.Vector3(0,.8,0))}
   setCargo(mesh,count){if(!mesh)return;const o=new THREE.Object3D();for(let i=0;i<mesh.count;i++){if(i<count){o.position.set((i%4-1.5)*.23,.12+Math.floor(i/4)*.18,(Math.floor(i/4)-1)*.21);o.rotation.set(i*.7,i,i*.33);o.scale.setScalar(.82)}else{o.position.set(0,-3,0);o.scale.setScalar(0)}o.updateMatrix();mesh.setMatrixAt(i,o.matrix)}mesh.instanceMatrix.needsUpdate=true}

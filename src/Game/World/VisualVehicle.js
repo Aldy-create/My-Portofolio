@@ -224,7 +224,7 @@ export class VisualVehicle
 
     setMainGroundTrack()
     {
-        this.mainGroundTrack = this.game.tracks.add(new Track(1.5, 'g'))
+        this.mainGroundTrack = this.game.tracks.add(new Track(0.9, 'g'))
     }
 
     setWheels()
@@ -266,7 +266,7 @@ export class VisualVehicle
             if(i === 0 || i === 2)
                 wheel.container.rotation.y = Math.PI
 
-            wheel.groundTrack = this.game.tracks.add(new Track(0.5, 'r'))
+            wheel.groundTrack = this.game.tracks.add(new Track(0.32, 'r'))
             this.wheels.items.push(wheel)
         }
     }

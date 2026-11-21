@@ -33,10 +33,10 @@ export class Nipple
         this.group.visible = false
         this.game.scene.add(this.group)
 
-        this.edgesThickness = 0.1
-        this.outlineThickness = 0.2
-        this.progressRadiusLow = 2
-        this.progressRadiusHigh = 4.5
+        this.edgesThickness = 0.07
+        this.outlineThickness = 0.12
+        this.progressRadiusLow = 1.5
+        this.progressRadiusHigh = 3.4
         this.forwardAmplitude = Math.PI * 1.5
 
         const geometry = new THREE.RingGeometry(
@@ -105,7 +105,7 @@ export class Nipple
 
             outline.lessThan(0.00001).discard()
 
-            const alpha = outline.mul(0.35).add(fill.mul(0.75))
+            const alpha = outline.mul(0.16).add(fill.mul(0.4))
 
             return vec4(vec3(fill).mul(this.uniforms.colorMultiplier), alpha)
         })()

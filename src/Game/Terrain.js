@@ -65,6 +65,14 @@ export class Terrain
                 if(Math.abs(wz + 11) < 2.2 && wx > -16 && wx < 16)
                     slabMask = Math.max(slabMask, 0.85)
 
+                // Outer ring road (perimeter loop) kept clear of spawn, plazas & work zones
+                const ringHalf = 30
+                const ringRoadHalfWidth = 3.0
+                const onVerticalRing = Math.abs(Math.abs(wx) - ringHalf) < ringRoadHalfWidth && Math.abs(wz) <= ringHalf + ringRoadHalfWidth
+                const onHorizontalRing = Math.abs(Math.abs(wz) - ringHalf) < ringRoadHalfWidth && Math.abs(wx) <= ringHalf + ringRoadHalfWidth
+                if(onVerticalRing || onHorizontalRing)
+                    slabMask = Math.max(slabMask, 0.9)
+
                 // Water pond at (-18, 16) and outer island shore (> 58m)
                 const distPond = Math.hypot(wx - (-18), wz - 16)
                 let waterDepth = 0.08
@@ -158,6 +166,7 @@ export class Terrain
     setNodes()
     {
         this.grassColorUniform = uniform(color('#b8b62e'))
+        this.dirtColorUniform = uniform(color('#6b5a44'))
         this.tracksDelta = uniform(vec2(0))
 
         const worldPositionToUvNode = Fn(([position]) =>
@@ -170,12 +179,14 @@ export class Terrain
             const textureUv = worldPositionToUvNode(position)
             const data = texture(this.terrainTexture, textureUv).toVar()
 
-            // Wheel tracks carve through the grass channel (G)
+            // Wheel tracks softly carve the grass channel (G); mask kept in A for dirt tinting
             const groundDataColor = texture(
                 this.game.tracks.renderTarget.texture,
                 position.sub(-this.game.tracks.halfSize).sub(this.tracksDelta).div(this.game.tracks.size)
             )
-            data.g.mulAssign(groundDataColor.r.oneMinus())
+            const trackMask = groundDataColor.r.toVar()
+            data.g.mulAssign(trackMask.mul(0.5).oneMinus())
+            data.a.assign(trackMask)
 
             return data
         })
@@ -184,6 +195,8 @@ export class Terrain
         {
             const baseColor = texture(this.gradientTexture, vec2(0, terrainData.b.oneMinus())).toVar()
             baseColor.assign(mix(baseColor, this.grassColorUniform, terrainData.g))
+            // Natural dark-brown tire tracks that blend into soil & grass
+            baseColor.assign(mix(baseColor, this.dirtColorUniform, terrainData.a.mul(0.55)))
             return baseColor.rgb
         })
     }

@@ -100,7 +100,8 @@ export class PortfolioLandmarks
             lampIntensityUniform: uniform(2.8),
             ringColorUniform: uniform(new THREE.Color('#ff2e55')),
             baseColor: new THREE.Color('#ff2e55'),
-            hasAutoPromptedInZone: false
+            hasAutoPromptedInZone: false,
+            playerInZone: false
         }
 
         this.robotics = {
@@ -412,7 +413,7 @@ export class PortfolioLandmarks
         }
     }
 
-    registerZoneInteraction(cfg, group, clickSphereOffset, onInteract, onEnterExtra = null)
+    registerZoneInteraction(cfg, group, clickSphereOffset, onInteract, onEnterExtra = null, alwaysClickable = false)
     {
         const pos = new THREE.Vector3(cfg.position.x, cfg.position.y, cfg.position.z)
         const cinematicPos = pos.clone().add(
@@ -454,7 +455,8 @@ export class PortfolioLandmarks
         const hitCenter = pos.clone().add(clickSphereOffset)
         this.game.rayCursor.addIntersect({
             active: true,
-            shape: new THREE.Sphere(hitCenter, 2.2),
+            ignoreDistance: alwaysClickable,
+            shape: new THREE.Sphere(hitCenter, alwaysClickable ? 3.0 : 2.2),
             onClick: () =>
             {
                 if(this.game.modals.state === Modals.CLOSED)
@@ -617,19 +619,11 @@ export class PortfolioLandmarks
             openVaultGimmick,
             (entered) =>
             {
-                if(entered)
-                {
-                    if(!this.vault.hasAutoPromptedInZone && this.game.modals.state === Modals.CLOSED)
-                    {
-                        this.vault.hasAutoPromptedInZone = true
-                        openVaultGimmick()
-                    }
-                }
-                else
-                {
+                this.vault.playerInZone = entered
+                if(!entered)
                     this.vault.hasAutoPromptedInZone = false
-                }
-            }
+            },
+            true
         )
     }
 
@@ -1117,6 +1111,19 @@ export class PortfolioLandmarks
                 if(this.vault.beaconMesh)
                     this.vault.beaconMesh.scale.setScalar(1.0)
             }
+        }
+
+        // Auto-open the GPA gimmick once the player enters the vault zone and slows/stops.
+        // hasAutoPromptedInZone acts as a cooldown: it only resets when the player leaves.
+        if(
+            this.vault.playerInZone &&
+            !this.vault.hasAutoPromptedInZone &&
+            this.game.modals.state === Modals.CLOSED &&
+            (this.game.physicalVehicle?.speed ?? 0) < 1.5
+        )
+        {
+            this.vault.hasAutoPromptedInZone = true
+            this.game.modals.open('gpa-gate', this.getCinematicCamera('education'))
         }
 
         // 2. Robotics Radar rotation + pulsing WiFi signal Torus waves

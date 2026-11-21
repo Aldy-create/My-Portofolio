@@ -61,6 +61,9 @@ export class RayCursor
                 if(!intersect.active)
                     return false
 
+                if(intersect.ignoreDistance)
+                    return true
+
                 const distance = Math.hypot(
                     this.game.view.focusPoint.position.x - intersect.position.x,
                     this.game.view.focusPoint.position.z - intersect.position.z

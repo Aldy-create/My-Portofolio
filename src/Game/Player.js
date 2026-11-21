@@ -135,7 +135,7 @@ export class Player
     setUnstuck()
     {
         this.unstuck = {}
-        this.unstuck.duration = 3
+        this.unstuck.duration = 1.2
         this.unstuck.delay = null
 
         this.game.physicalVehicle.events.on('rightSideUp', () =>

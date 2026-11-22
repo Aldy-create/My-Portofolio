@@ -69,10 +69,12 @@ export class PhysicsVehicle
             type: 'dynamic',
             position: this.position,
             friction: 0.4,
+            linearDamping: 0.14,
+            angularDamping: 0.48,
             rotation: new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0, 1, 0), 0),
             colliders: [
-                // 1. Main Body with shifted Center of Mass (y: -0.5)
-                { shape: 'cuboid', mass: 2.5, parameters: [ 1.3, 0.4, 0.85 ], position: { x: 0, y: -0.1, z: 0 }, centerOfMass: { x: 0, y: -0.95, z: 0 } },
+                // 1. Main Body with low Center of Mass (y: -1.15) for anti-roll stability
+                { shape: 'cuboid', mass: 2.8, parameters: [ 1.3, 0.4, 0.85 ], position: { x: 0, y: -0.1, z: 0 }, centerOfMass: { x: 0, y: -1.15, z: 0 } },
                 // 2. Top Cabin
                 { shape: 'cuboid', mass: 0, parameters: [ 0.5, 0.15, 0.65 ], position: { x: 0, y: 0.4, z: 0 } },
                 // 3. Bumper (only collides with dynamic objects, ignores floor)
@@ -195,7 +197,8 @@ export class PhysicsVehicle
         this.upsideDown = {}
         this.upsideDown.active = false
         this.upsideDown.ratio = 0
-        this.upsideDown.threshold = 0.3
+        this.upsideDown.threshold = 0.28
+        this.upsideDown.elapsed = 0
 
         this.upsideDown.test = () =>
         {
@@ -203,14 +206,27 @@ export class PhysicsVehicle
 
             if(this.upsideDown.ratio > this.upsideDown.threshold)
             {
+                this.upsideDown.elapsed += this.game.ticker.delta
                 if(!this.upsideDown.active)
                 {
                     this.upsideDown.active = true
                     this.events.trigger('upsideDown', [ this.upsideDown.ratio ])
                 }
+
+                // Guaranteed upright recovery if flipped for > 1.4s
+                if(this.upsideDown.elapsed > 1.4)
+                {
+                    this.upsideDown.elapsed = 0
+                    const heading = Math.atan2(this.forward.z, this.forward.x)
+                    this.moveTo(
+                        new THREE.Vector3(this.position.x, Math.max(1.8, this.position.y + 1.1), this.position.z),
+                        -heading
+                    )
+                }
             }
             else
             {
+                this.upsideDown.elapsed = 0
                 if(this.upsideDown.active)
                 {
                     this.upsideDown.active = false

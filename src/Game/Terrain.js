@@ -25,9 +25,9 @@ export class Terrain
     setProceduralTerrainTexture()
     {
         // Generate 256x256 terrain data map:
-        // R = Stone slab mask (roads, central plaza, zone pads)
-        // G = Grass density mask (1 on grass, 0 on roads/water)
-        // B = Water / dirt gradient depth (0 = dry land, >0.25 = water pond/moat)
+        // R = Dark charcoal asphalt road & plaza mask
+        // G = Grass density mask (strictly 0 on all roads, garage pads, construction pit, and plazas)
+        // B = Water / shoreline depth (0 = dry land, >0.25 = water pond/moat)
         const size = 256
         const canvas = document.createElement('canvas')
         canvas.width = size
@@ -49,46 +49,73 @@ export class Terrain
 
                 const distCenter = Math.hypot(wx, wz)
 
-                // Stone plaza at spawn (0,0) and connecting roads to zones
-                const distSpawn = Math.hypot(wx, wz)
-                const distProjects = Math.hypot(wx - (-15), wz - (-11))
-                const distAbout = Math.hypot(wx - 15, wz - (-11))
-                const distSpecs = Math.hypot(wx - 0, wz - (-19))
+                // Plazas: Spawn (0,0) and 5 Portfolio Landmark Plazas
+                const distSpawn = Math.hypot(wx, wz - (-1.5))
+                const distRobotics = Math.hypot(wx - (-15), wz - (-10))
+                const distEducation = Math.hypot(wx - 14, wz - (-10))
+                const distMusic = Math.hypot(wx - 0, wz - (-19))
+                const distMl = Math.hypot(wx - (-20), wz - 4)
+                const distExp = Math.hypot(wx - 24, wz - (-5))
 
                 let slabMask = 0
-                if(distSpawn < 5.5 || distProjects < 6.2 || distAbout < 6.2 || distSpecs < 6.0)
+                if(
+                    distSpawn < 6.8 ||
+                    distRobotics < 6.4 ||
+                    distEducation < 6.4 ||
+                    distMusic < 6.4 ||
+                    distMl < 6.4 ||
+                    distExp < 6.4
+                )
+                {
+                    slabMask = 1.0
+                }
+
+                // 1. Main North-South Asphalt Avenue (x = 0, z = -20..32)
+                if(Math.abs(wx) < 2.9 && wz > -20.5 && wz < 33)
                     slabMask = 1.0
 
-                // Cross-road paths connecting spawn to zones and stunt arena
-                if(Math.abs(wx) < 2.4 && wz > -20 && wz < 16)
-                    slabMask = Math.max(slabMask, 0.85)
-                if(Math.abs(wz + 11) < 2.2 && wx > -16 && wx < 16)
-                    slabMask = Math.max(slabMask, 0.85)
+                // 2. North East-West Asphalt Avenue (z = -10, x = -32..32)
+                if(Math.abs(wz + 10) < 2.8 && wx > -33 && wx < 33)
+                    slabMask = 1.0
 
-                // Outer ring road (perimeter loop) kept clear of spawn, plazas & work zones
-                const ringHalf = 30
-                const ringRoadHalfWidth = 3.0
+                // 3. Mid East-West Asphalt Avenue (z = 4, x = -32..32)
+                if(Math.abs(wz - 4) < 2.7 && wx > -33 && wx < 33)
+                    slabMask = 1.0
+
+                // 4. Outer Asphalt Ring Road Loop (|x| = 32, |z| = 32)
+                const ringHalf = 32
+                const ringRoadHalfWidth = 3.2
                 const onVerticalRing = Math.abs(Math.abs(wx) - ringHalf) < ringRoadHalfWidth && Math.abs(wz) <= ringHalf + ringRoadHalfWidth
                 const onHorizontalRing = Math.abs(Math.abs(wz) - ringHalf) < ringRoadHalfWidth && Math.abs(wx) <= ringHalf + ringRoadHalfWidth
                 if(onVerticalRing || onHorizontalRing)
-                    slabMask = Math.max(slabMask, 0.9)
+                    slabMask = 1.0
 
-                // Water pond at (-18, 16) and outer island shore (> 58m)
-                const distPond = Math.hypot(wx - (-18), wz - 16)
+                // 5. Garage / Parking Pad Apron (-25.5..-3.5, 10.5..26.0)
+                const inGaragePad = wx >= -25.5 && wx <= -3.5 && wz >= 10.5 && wz <= 26.0
+                if(inGaragePad)
+                    slabMask = 1.0
+
+                // 6. Active Construction Pit & Equipment Staging Area (8.0..25.8, 1.0..18.0)
+                const inConstructionZone = wx >= 8.0 && wx <= 25.8 && wz >= 1.0 && wz <= 18.0
+                if(inConstructionZone)
+                    slabMask = Math.max(slabMask, 0.92)
+
+                // Scenic water pond at (-24, -22) and outer island shore (> 58m)
+                const distPond = Math.hypot(wx - (-24), wz - (-22))
                 let waterDepth = 0.08
-                if(distPond < 7.5)
+                if(distPond < 6.2)
                 {
-                    waterDepth = Math.min(0.95, 0.15 + (1 - distPond / 7.5) * 0.8)
+                    waterDepth = Math.min(0.95, 0.15 + (1 - distPond / 6.2) * 0.8)
                 }
-                if(distCenter > 56)
+                if(distCenter > 58)
                 {
-                    waterDepth = Math.max(waterDepth, Math.min(0.95, 0.08 + ((distCenter - 56) / 22) * 0.88))
+                    waterDepth = Math.max(waterDepth, Math.min(0.95, 0.08 + ((distCenter - 58) / 22) * 0.88))
                 }
 
-                // Grass mask: lush everywhere except stone roads and deep water
-                let grassMask = 1.0 - slabMask * 0.92
-                if(waterDepth > 0.18)
-                    grassMask *= Math.max(0, 1 - (waterDepth - 0.18) * 3.5)
+                // Strictly zero tall grass on all roads, plazas, garage pads, construction pit, and water
+                let grassMask = slabMask > 0.12 ? 0.0 : 1.0
+                if(waterDepth > 0.16)
+                    grassMask = 0.0
 
                 const idx = (y * size + x) * 4
                 data[idx + 0] = Math.round(Math.max(0, Math.min(1, slabMask)) * 255)
@@ -111,22 +138,22 @@ export class Terrain
 
     setSlabsTexture()
     {
+        // Fine asphalt grain texture (replaces the old blocky orange/gray grid tiles)
         const size = 128
         const canvas = document.createElement('canvas')
         canvas.width = size
         canvas.height = size
         const ctx = canvas.getContext('2d')
 
-        ctx.fillStyle = '#555555'
+        ctx.fillStyle = '#303440'
         ctx.fillRect(0, 0, size, size)
 
-        ctx.fillStyle = '#cccccc'
-        const gap = 4
-        const half = size / 2
-        ctx.fillRect(gap, gap, half - gap * 2, half - gap * 2)
-        ctx.fillRect(half + gap, gap, half - gap * 2, half - gap * 2)
-        ctx.fillRect(gap, half + gap, half - gap * 2, half - gap * 2)
-        ctx.fillRect(half + gap, half + gap, half - gap * 2, half - gap * 2)
+        for(let i = 0; i < 600; i++)
+        {
+            const v = 38 + Math.floor(Math.random() * 28)
+            ctx.fillStyle = `rgb(${v},${v + 2},${v + 6})`
+            ctx.fillRect(Math.random() * size, Math.random() * size, 2, 2)
+        }
 
         this.slabsTexture = new THREE.Texture(canvas)
         this.slabsTexture.wrapS = THREE.RepeatWrapping
@@ -149,8 +176,8 @@ export class Terrain
 
         const context = canvas.getContext('2d')
         this.colors = [
-            { stop: 0.1, value: '#ffa94e' },
-            { stop: 0.3, value: '#5bc2b9' },
+            { stop: 0.1, value: '#6f8c49' },
+            { stop: 0.35, value: '#469e94' },
             { stop: 0.9, value: '#13375f' },
         ]
 
@@ -165,8 +192,8 @@ export class Terrain
 
     setNodes()
     {
-        this.grassColorUniform = uniform(color('#b8b62e'))
-        this.dirtColorUniform = uniform(color('#6b5a44'))
+        this.grassColorUniform = uniform(color('#7da442'))
+        this.dirtColorUniform = uniform(color('#594c3c'))
         this.tracksDelta = uniform(vec2(0))
 
         const worldPositionToUvNode = Fn(([position]) =>
@@ -195,8 +222,7 @@ export class Terrain
         {
             const baseColor = texture(this.gradientTexture, vec2(0, terrainData.b.oneMinus())).toVar()
             baseColor.assign(mix(baseColor, this.grassColorUniform, terrainData.g))
-            // Natural dark-brown tire tracks that blend into soil & grass
-            baseColor.assign(mix(baseColor, this.dirtColorUniform, terrainData.a.mul(0.55)))
+            baseColor.assign(mix(baseColor, this.dirtColorUniform, terrainData.a.mul(0.45)))
             return baseColor.rgb
         })
     }

@@ -156,7 +156,7 @@ export class Grass
             wind.assign(this.game.wind.offsetNode(worldPosition.xz).mul(tipness).mul(height).mul(2))
             vertexPosition.addAssign(vec3(wind.x, 0, wind.y))
 
-            vertexPosition.y.addAssign(hidden.mul(100))
+            vertexPosition.y.addAssign(hidden.mul(-100))
 
             return vertexPosition
         })()

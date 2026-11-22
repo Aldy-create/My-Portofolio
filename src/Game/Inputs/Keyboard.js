@@ -24,19 +24,22 @@ export default class Keyboard
             if(isWandering && (_event.code === 'Space' || _event.code.startsWith('Arrow')))
                 _event.preventDefault()
 
-            this.pressed.push(_event.code, _event.key)
-            this.events.trigger('down', [ _event.code, _event.key ])
+            if(!this.pressed.includes(_event.code))
+                this.pressed.push(_event.code)
+            if(!this.pressed.includes(_event.key))
+                this.pressed.push(_event.key)
+
+            if(!_event.repeat)
+                this.events.trigger('down', [ _event.code, _event.key ])
         })
 
         window.addEventListener('keyup', (_event) =>
         {
-            const indexCode = this.pressed.indexOf(_event.code)
-            if(indexCode !== -1)
-                this.pressed.splice(indexCode, 1)
-
-            const indexKey = this.pressed.indexOf(_event.key)
-            if(indexKey !== -1)
-                this.pressed.splice(indexKey, 1)
+            for(let i = this.pressed.length - 1; i >= 0; i--)
+            {
+                if(this.pressed[i] === _event.code || this.pressed[i] === _event.key)
+                    this.pressed.splice(i, 1)
+            }
 
             this.events.trigger('up', [ _event.code, _event.key ])
         })

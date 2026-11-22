@@ -90,14 +90,18 @@ export class Player
             if(this.state !== Player.STATE_DEFAULT)
                 return
 
+            const activeVehicleId = this.game.vehicleManager?.activeId || 'buggy'
+            const isHeavyMachinery = activeVehicleId === 'excavator' || activeVehicleId === 'dump-truck' || activeVehicleId === 'bulldozer'
+            const spaceOrSuspActive = !isHeavyMachinery && this.game.inputs.actions.get('suspensions').active
+
             const activeSuspensions = [
-                this.game.inputs.actions.get('suspensions').active || this.game.inputs.actions.get('suspensionsFront').active || this.game.inputs.actions.get('suspensionsRight').active || this.game.inputs.actions.get('suspensionsFrontRight').active,
-                this.game.inputs.actions.get('suspensions').active || this.game.inputs.actions.get('suspensionsFront').active || this.game.inputs.actions.get('suspensionsLeft').active || this.game.inputs.actions.get('suspensionsFrontLeft').active,
-                this.game.inputs.actions.get('suspensions').active || this.game.inputs.actions.get('suspensionsBack').active || this.game.inputs.actions.get('suspensionsRight').active || this.game.inputs.actions.get('suspensionsBackRight').active,
-                this.game.inputs.actions.get('suspensions').active || this.game.inputs.actions.get('suspensionsBack').active || this.game.inputs.actions.get('suspensionsLeft').active || this.game.inputs.actions.get('suspensionsBackLeft').active,
+                spaceOrSuspActive || this.game.inputs.actions.get('suspensionsFront').active || this.game.inputs.actions.get('suspensionsRight').active || this.game.inputs.actions.get('suspensionsFrontRight').active,
+                spaceOrSuspActive || this.game.inputs.actions.get('suspensionsFront').active || this.game.inputs.actions.get('suspensionsLeft').active || this.game.inputs.actions.get('suspensionsFrontLeft').active,
+                spaceOrSuspActive || this.game.inputs.actions.get('suspensionsBack').active || this.game.inputs.actions.get('suspensionsRight').active || this.game.inputs.actions.get('suspensionsBackRight').active,
+                spaceOrSuspActive || this.game.inputs.actions.get('suspensionsBack').active || this.game.inputs.actions.get('suspensionsLeft').active || this.game.inputs.actions.get('suspensionsBackLeft').active,
             ]
 
-            const activeState = this.game.inputs.actions.get('suspensions').active ? 'high' : 'mid'
+            const activeState = spaceOrSuspActive ? 'high' : 'mid'
 
             for(let i = 0; i < 4; i++)
                 this.suspensions[i] = activeSuspensions[i] ? activeState : 'low'

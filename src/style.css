@@ -109,9 +109,17 @@ a:focus-visible, button:focus-visible {
   z-index: 20;
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: flex-start;
   gap: 0.75rem;
   pointer-events: none;
+}
+
+.nav-capsule {
+  position: fixed;
+  top: 1.1rem;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 22;
 }
 
 .identity-chip {
@@ -876,12 +884,18 @@ html.is-mode-touch .touch-controls {
 /* Responsive Breakpoints */
 @media (max-width: 768px) {
   .hud-top {
-    top: 0.75rem;
-    left: 0.75rem;
-    right: 0.75rem;
+    top: 0.65rem;
+    left: 0.65rem;
+    right: 0.65rem;
     flex-direction: column;
-    align-items: center;
-    gap: 0.5rem;
+    align-items: flex-start;
+    gap: 0.45rem;
+  }
+
+  .nav-capsule {
+    position: static;
+    transform: none;
+    align-self: center;
   }
 
   .identity-role {
@@ -988,12 +1002,15 @@ html.is-mode-touch .vehicle-nearby-prompt kbd,
 html.is-mode-touch .zone-badge,
 html.is-mode-touch .vehicle-controls-hint { display: none !important; }
 @media (max-width: 768px) {
-  .vehicle-switcher { left: .5rem; top: 7.4rem; bottom: auto; width: 192px; padding: .4rem; }
-  .vehicle-switcher-list { gap: .22rem; }
-  .vehicle-switcher-list button { padding: .3rem .25rem; font-size: .58rem; }
-  .vehicle-nearby-prompt { bottom: 16rem; }
-  .vehicle-controls-hint { top: 7.6rem; right: .5rem; max-width: 190px; font-size: .55rem; }
-  .world-audio-toggle { top: .55rem; right: .55rem; }
-  .toast-banner { top: 8rem; bottom: auto; left: auto; right: .6rem; transform: translateY(-8px); }
-  .toast-banner.is-visible { transform: translateY(0); }
+  .vehicle-switcher { left: .5rem; top: 5.8rem; bottom: auto; width: 176px; padding: .38rem; }
+  .vehicle-switcher-toggle { display: block; }
+  .vehicle-switcher-list { display: none; margin-top: .38rem; gap: .22rem; }
+  .vehicle-switcher.is-open .vehicle-switcher-list { display: grid; }
+  .vehicle-switcher-list button { padding: .32rem .28rem; font-size: .6rem; }
+  .vehicle-nearby-prompt { bottom: 11.4rem; }
+  .vehicle-touch-controls { bottom: 8.2rem; }
+  .vehicle-controls-hint { top: 5.8rem; right: .5rem; max-width: 185px; font-size: .56rem; }
+  .world-audio-toggle { top: .65rem; right: .65rem; }
+  .toast-banner { top: 5.6rem; bottom: auto; left: 50%; right: auto; transform: translate(-50%, -8px); max-width: 90vw; text-align: center; }
+  .toast-banner.is-visible { transform: translate(-50%, 0); }
 }

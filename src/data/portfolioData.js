@@ -32,14 +32,14 @@ export const PORTFOLIO_DATA = {
             triggerButton: 'Hire Me to Unlock',
             prompt: 'Nice try! Viewing my GPA requires an active Job Offer or Internship Invite.',
             hireButton: 'Hire / Send Offer 💼',
-            forceButton: 'Cuma Kepo / Paksa Buka 👀',
+            forceButton: 'Just Snooping / Force Open 👀',
             hireReply:
                 'Smart move! Opening your email client—GPA will be delivered straight to your inbox alongside my interview 😉',
             mailtoSubject: 'Unlocking Your GPA — Opportunity / Collaboration',
             forceReplies: [
                 'Access denied. Clearance level: HRD / Tech Lead only 😎',
-                'Klik makin kenceng juga nggak bakal kebuka. Kirim undangan interview dulu dong!',
-                'Salut sama kegigihannya. Kayaknya kita cocok kerja bareng—langsung pencet tombol Hire aja!'
+                'Clicking harder won’t decrypt the vault! Send an interview invite first 😉',
+                'Impressive persistence! We’d clearly work great together—just hit that Hire button already!'
             ]
         }
     },

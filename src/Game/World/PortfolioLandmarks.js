@@ -72,7 +72,7 @@ export const LANDMARK_COORDS = {
     experienceSkillsTower: {
         id: 'experience',
         label: 'EXPERIENCE & SKILLS',
-        position: { x: 20, y: 0, z: 4 },
+        position: { x: 24, y: 0, z: -5 },
         interactivePointOffset: { x: 0, y: 1.9, z: 2.8 },
         cinematicOffset: { x: -7.0, y: 5.8, z: 8.0 },
         zoneRadius: 6.2
@@ -620,8 +620,18 @@ export class PortfolioLandmarks
             (entered) =>
             {
                 this.vault.playerInZone = entered
-                if(!entered)
+                if(entered)
+                {
+                    if(!this.vault.hasAutoPromptedInZone && this.game.modals.state === Modals.CLOSED)
+                    {
+                        this.vault.hasAutoPromptedInZone = true
+                        openVaultGimmick()
+                    }
+                }
+                else
+                {
                     this.vault.hasAutoPromptedInZone = false
+                }
             },
             true
         )

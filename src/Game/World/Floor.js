@@ -30,9 +30,9 @@ export class Floor
         geometry.deleteAttribute('normal')
 
         const terrainData = this.game.terrain.terrainNode(positionWorld.xz)
-        const slabHighColor = uniform(color('#ffcf8b'))
-        const slabLowColor = uniform(color('#a87762'))
-        const slabTextureFrequency = uniform(0.175)
+        const slabHighColor = uniform(color('#2d313d'))
+        const slabLowColor = uniform(color('#1f222b'))
+        const slabTextureFrequency = uniform(0.22)
         const slabNoiseFrequency = uniform(0.03)
 
         const colorNode = Fn(() =>

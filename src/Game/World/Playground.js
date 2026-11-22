@@ -164,12 +164,12 @@ export class Playground
             )
         }
 
-        // Dual stunt jump ramps facing each other in the southern playground
-        createRamp(new THREE.Vector3(-6.5, 0.52, 9.5), 0, 4.4, 5.4, 0.31)
-        createRamp(new THREE.Vector3(6.5, 0.52, 9.5), Math.PI, 4.4, 5.4, 0.31)
+        // Dual stunt jump ramps in the South-Central Stunt Park (clear of Garage & Construction Pit)
+        createRamp(new THREE.Vector3(-4.2, 0.52, 8.2), Math.PI * 0.5, 3.8, 4.8, 0.29)
+        createRamp(new THREE.Vector3(4.2, 0.52, 8.2), Math.PI * 0.5, 3.8, 4.8, 0.29)
 
         // Mega launch ramp facing north toward center plaza
-        createRamp(new THREE.Vector3(0, 0.72, 20.5), Math.PI * 0.5, 5.2, 6.2, 0.38)
+        createRamp(new THREE.Vector3(0, 0.72, 23.5), Math.PI * 0.5, 4.8, 5.8, 0.36)
     }
 
     setBrickWallsAndPyramids()
@@ -217,17 +217,17 @@ export class Playground
             }
         }
 
-        // 1. Center Southern Brick Wall (between the two ramps)
-        buildBrickWall(0, 9.5, 5, 4, false)
+        // 1. Center Southern Brick Wall (in front of mega ramp)
+        buildBrickWall(0, 17.8, 5, 4, false)
 
-        // 2. West & East Destructible Brick Stacks
-        buildBrickWall(-11.5, 2.0, 4, 4, true)
-        buildBrickWall(11.5, 2.0, 4, 4, true)
+        // 2. West & East Destructible Brick Stacks (off the main avenue shoulders)
+        buildBrickWall(-9.5, -2.5, 4, 4, true)
+        buildBrickWall(9.5, -2.5, 4, 4, true)
 
-        // 3. Dynamic Cargo Crate Pyramid at (0, 0, 14.5)
+        // 3. Dynamic Cargo Crate Pyramid at (4.5, 0, 16.5)
         const crateHalf = 0.45
         const crateGeo = new THREE.BoxGeometry(crateHalf * 2, crateHalf * 2, crateHalf * 2)
-        const pyramidBase = new THREE.Vector3(0, 0, 14.5)
+        const pyramidBase = new THREE.Vector3(4.5, 0, 16.5)
 
         for(let layer = 0; layer < 3; layer++)
         {
@@ -262,9 +262,9 @@ export class Playground
     {
         // Glowing HDR Explosive Crates: hitting them triggers Bullet-Time + radial blast + camera roll kick!
         const positions = [
-            new THREE.Vector3(-4.8, 0.5, 4.5),
-            new THREE.Vector3(4.8, 0.5, 4.5),
-            new THREE.Vector3(0, 0.5, 12.0),
+            new THREE.Vector3(-4.2, 0.5, 13.0),
+            new THREE.Vector3(4.2, 0.5, 13.0),
+            new THREE.Vector3(0, 0.5, 15.5),
         ]
 
         const crateGeo = new THREE.BoxGeometry(0.95, 0.95, 0.95)
